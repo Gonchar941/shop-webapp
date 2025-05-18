@@ -1,47 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Магазин одежды</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f5f5f5; }
-    .item { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
-    .item img { max-width: 100%; height: auto; border-radius: 5px; }
-    .title { font-size: 18px; font-weight: bold; margin-top: 10px; }
-    .price { color: green; font-weight: bold; margin: 5px 0; }
-    .status { font-size: 14px; color: #666; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding-bottom: 80px;
+    }
+    .container {
+      padding: 20px;
+    }
+    .item {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: transform 0.3s ease;
+    }
+    .item:hover {
+      transform: scale(1.02);
+    }
+    .item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .title {
+      font-size: 18px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .price {
+      color: #0a8754;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    .status {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .cart-btn {
+      background: #007bff;
+      color: #fff;
+      padding: 10px;
+      width: 100%;
+      text-align: center;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .cart-btn:hover {
+      background: #0056b3;
+    }
+    .navbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+    }
+    .nav-item {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+      transition: color 0.3s ease;
+    }
+    .nav-item:hover {
+      color: #007bff;
+    }
+    .nav-item svg {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 2px;
+    }
   </style>
 </head>
 <body>
+
+<div class="container" id="items">
   <h2>🛍 Наш каталог</h2>
-  <div id="items"></div>
+</div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.4/tabletop.min.js"></script>
-  <script>
-    const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o/edit?usp=sharing';
+<div class="navbar">
+  <div class="nav-item">
+    <div>🛍<br>Магазин</div>
+  </div>
+  <div class="nav-item">
+    <div>🧺<br>Корзина</div>
+  </div>
+  <div class="nav-item">
+    <div>❤️<br>Избранное</div>
+  </div>
+  <div class="nav-item">
+    <div>📞<br>Контакты</div>
+  </div>
+</div>
 
-    function showInfo(data) {
-      const itemsDiv = document.getElementById('items');
-      data.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `
-          <img src="${item.Фото}" alt="${item.Название}">
-          <div class="title">${item.Название}</div>
-          <div class="price">${item.Цена} руб.</div>
-          <div class="status">${item["В наличии"] === 'Да' ? '✅ В наличии' : '❌ Нет в наличии'}</div>
-        `;
-        itemsDiv.appendChild(div);
-      });
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.4/tabletop.min.js"></script>
+<script>
+  const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o/edit?usp=sharing';
 
-    window.addEventListener('DOMContentLoaded', () => {
-      Tabletop.init({
-        key: publicSpreadsheetUrl,
-        simpleSheet: true,
-        callback: showInfo
-      });
+  function showInfo(data) {
+    const itemsDiv = document.getElementById('items');
+    data.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <img src="${item.Фото}" alt="${item.Название}">
+        <div class="title">${item.Название}</div>
+        <div class="price">${item.Цена} руб.</div>
+        <div class="status">${item["В наличии"] === 'Да' ? '✅ В наличии' : '❌ Нет в наличии'}</div>
+        <button class="cart-btn">Добавить в корзину</button>
+      `;
+      itemsDiv.appendChild(div);
     });
-  </script>
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    Tabletop.init({
+      key: publicSpreadsheetUrl,
+      simpleSheet: true,
+      callback: showInfo
+    });
+  });
+</script>
+
 </body>
 </html>
