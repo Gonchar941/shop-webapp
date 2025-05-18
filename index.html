@@ -127,16 +127,18 @@
     const container = document.getElementById('items');
     container.innerHTML = '';
     data.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'item';
-      div.innerHTML = `
-        <img src="${item.Фото}" alt="${item.Название}">
-        <div class="title">${item.Название}</div>
-        <div class="price">${item.Цена} руб.</div>
-        <div class="status">${item['В наличии'] === 'Да' ? '✅ В наличии' : '❌ Нет в наличии'}</div>
-        <button class="cart-btn" onclick="addToCart('${item.Название}', '${item.Цена}')">Добавить в корзину</button>
-      `;
-      container.appendChild(div);
+      if (item['В наличии'] && item['В наличии'].trim().toLowerCase() === 'да') {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <img src="${item['Фото (URL)']}" alt="${item.Название}">
+          <div class="title">${item.Название}</div>
+          <div class="price">${item.Цена} руб.</div>
+          <div class="status">${item["В наличии"] === 'Да' ? '✅ В наличии' : '❌ Нет в наличии'}</div>
+          <button class="cart-btn" onclick="addToCart('${item.Название}', '${item.Цена}')">Добавить в корзину</button>
+        `;
+        container.appendChild(div);
+      }
     });
   }
 
