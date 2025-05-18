@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
+      background: #f0f0f5;
       padding-bottom: 80px;
     }
     .container {
@@ -17,13 +17,13 @@
     .item {
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       padding: 15px;
-      margin-bottom: 15px;
-      transition: transform 0.3s ease;
+      margin-bottom: 20px;
+      transition: transform 0.2s ease;
     }
     .item:hover {
-      transform: scale(1.02);
+      transform: scale(1.01);
     }
     .item img {
       width: 100%;
@@ -32,32 +32,32 @@
     .title {
       font-size: 18px;
       margin-top: 10px;
-      font-weight: bold;
+      font-weight: 600;
     }
     .price {
-      color: #0a8754;
+      color: #198754;
       font-weight: bold;
       margin: 5px 0;
     }
     .status {
       font-size: 14px;
-      color: #888;
+      color: #777;
       margin-bottom: 10px;
     }
     .cart-btn {
-      background: #007bff;
+      background: #0d6efd;
       color: #fff;
       padding: 10px;
       width: 100%;
       text-align: center;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
-      transition: background 0.3s;
+      transition: background 0.3s ease;
     }
     .cart-btn:hover {
-      background: #0056b3;
+      background: #0b5ed7;
     }
     .navbar {
       position: fixed;
@@ -69,52 +69,63 @@
       display: flex;
       justify-content: space-around;
       align-items: center;
-      border-top: 1px solid #ddd;
+      border-top: 1px solid #ccc;
       box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+      z-index: 999;
     }
     .nav-item {
       text-align: center;
       font-size: 12px;
       color: #555;
-      transition: color 0.3s ease;
+      cursor: pointer;
+      transition: color 0.3s;
     }
     .nav-item:hover {
-      color: #007bff;
+      color: #0d6efd;
     }
-    .nav-item svg {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 2px;
+    .nav-item span {
+      display: block;
+      font-size: 20px;
+    }
+    #page-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      padding: 15px 0;
+      background-color: #fff;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
   </style>
 </head>
 <body>
 
-<div class="container" id="items">
-  <h2>🛍 Наш каталог</h2>
-</div>
+<div id="page-title">🛍 Магазин одежды</div>
+<div class="container" id="items"></div>
 
 <div class="navbar">
-  <div class="nav-item">
-    <div>🛍<br>Магазин</div>
+  <div class="nav-item" onclick="goTo('shop')">
+    <span>🏦</span>Магазин
   </div>
-  <div class="nav-item">
-    <div>🧺<br>Корзина</div>
+  <div class="nav-item" onclick="goTo('cart')">
+    <span>🧹</span>Корзина
   </div>
-  <div class="nav-item">
-    <div>❤️<br>Избранное</div>
+  <div class="nav-item" onclick="goTo('favorites')">
+    <span>❤️</span>Избранное
   </div>
-  <div class="nav-item">
-    <div>📞<br>Контакты</div>
+  <div class="nav-item" onclick="goTo('contacts')">
+    <span>☎️</span>Контакты
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.4/tabletop.min.js"></script>
 <script>
-  const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o/edit?usp=sharing';
+  const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o/edit?usp=sharing';
+  let cart = [];
 
-  function showInfo(data) {
-    const itemsDiv = document.getElementById('items');
+  function showShop(data) {
+    const container = document.getElementById('items');
+    container.innerHTML = '';
     data.forEach(item => {
       const div = document.createElement('div');
       div.className = 'item';
@@ -122,19 +133,44 @@
         <img src="${item.Фото}" alt="${item.Название}">
         <div class="title">${item.Название}</div>
         <div class="price">${item.Цена} руб.</div>
-        <div class="status">${item["В наличии"] === 'Да' ? '✅ В наличии' : '❌ Нет в наличии'}</div>
-        <button class="cart-btn">Добавить в корзину</button>
+        <div class="status">${item['В наличии'] === 'Да' ? '✅ В наличии' : '❌ Нет в наличии'}</div>
+        <button class="cart-btn" onclick="addToCart('${item.Название}', '${item.Цена}')">Добавить в корзину</button>
       `;
-      itemsDiv.appendChild(div);
+      container.appendChild(div);
     });
   }
 
+  function addToCart(name, price) {
+    cart.push({ name, price });
+    alert(`Товар “${name}” добавлен в корзину!`);
+  }
+
+  function goTo(page) {
+    const container = document.getElementById('items');
+    const title = document.getElementById('page-title');
+
+    if (page === 'shop') {
+      title.innerText = '🛍 Магазин одежды';
+      Tabletop.init({ key: spreadsheetUrl, simpleSheet: true, callback: showShop });
+    } else if (page === 'cart') {
+      title.innerText = '🧺 Ваша корзина';
+      container.innerHTML = cart.length === 0 ? '<p>Корзина пуста.</p>' : cart.map(item => `
+        <div class="item">
+          <div class="title">${item.name}</div>
+          <div class="price">${item.price} руб.</div>
+        </div>
+      `).join('');
+    } else if (page === 'favorites') {
+      title.innerText = '❤️ Избранное';
+      container.innerHTML = '<p>Вы ещё не добавили товары в избранное.</p>';
+    } else if (page === 'contacts') {
+      title.innerText = '☎️ Контакты';
+      container.innerHTML = '<p>Связь: @your_tg или +7 900 000 00 00</p>';
+    }
+  }
+
   window.addEventListener('DOMContentLoaded', () => {
-    Tabletop.init({
-      key: publicSpreadsheetUrl,
-      simpleSheet: true,
-      callback: showInfo
-    });
+    Tabletop.init({ key: spreadsheetUrl, simpleSheet: true, callback: showShop });
   });
 </script>
 
