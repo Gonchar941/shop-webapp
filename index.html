@@ -120,7 +120,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.4/tabletop.min.js"></script>
 <script>
-  const spreadsheetUrl = '1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o';
+  const spreadsheetKey = '1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o';
   let cart = [];
 
   function showShop(data) {
@@ -134,7 +134,7 @@
           <img src="${item['Фото (URL)']}" alt="${item.Название}">
           <div class="title">${item.Название}</div>
           <div class="price">${item.Цена} руб.</div>
-          <div class="status">${item["В наличии"] === 'Да' ? '✅ В наличии' : '❌ Нет в наличии'}</div>
+          <div class="status">✅ В наличии</div>
           <button class="cart-btn" onclick="addToCart('${item.Название}', '${item.Цена}')">Добавить в корзину</button>
         `;
         container.appendChild(div);
@@ -153,7 +153,7 @@
 
     if (page === 'shop') {
       title.innerText = '🛍 Магазин одежды';
-      Tabletop.init({ key: spreadsheetUrl, simpleSheet: true, callback: showShop });
+      Tabletop.init({ key: spreadsheetKey, simpleSheet: true, callback: showShop });
     } else if (page === 'cart') {
       title.innerText = '🧺 Ваша корзина';
       container.innerHTML = cart.length === 0 ? '<p>Корзина пуста.</p>' : cart.map(item => `
@@ -172,7 +172,7 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    Tabletop.init({ key: spreadsheetUrl, simpleSheet: true, callback: showShop });
+    Tabletop.init({ key: spreadsheetKey, simpleSheet: true, callback: showShop });
   });
 </script>
 
