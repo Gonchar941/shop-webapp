@@ -124,6 +124,7 @@
   let cart = [];
 
   function showShop(data) {
+    console.log('Данные получены:', data);
     const container = document.getElementById('items');
     container.innerHTML = '';
     data.forEach(item => {
@@ -153,7 +154,14 @@
 
     if (page === 'shop') {
       title.innerText = '🛍 Магазин одежды';
-      Tabletop.init({ key: spreadsheetKey, simpleSheet: true, callback: showShop });
+      Tabletop.init({
+        key: spreadsheetKey,
+        simpleSheet: true,
+        callback: data => {
+          console.log('Данные получены:', data);
+          showShop(data);
+        }
+      });
     } else if (page === 'cart') {
       title.innerText = '🧺 Ваша корзина';
       container.innerHTML = cart.length === 0 ? '<p>Корзина пуста.</p>' : cart.map(item => `
@@ -172,7 +180,14 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    Tabletop.init({ key: spreadsheetKey, simpleSheet: true, callback: showShop });
+    Tabletop.init({
+      key: spreadsheetKey,
+      simpleSheet: true,
+      callback: data => {
+        console.log('Данные получены:', data);
+        showShop(data);
+      }
+    });
   });
 </script>
 
