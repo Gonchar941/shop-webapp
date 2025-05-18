@@ -108,7 +108,7 @@
     <span>🏦</span>Магазин
   </div>
   <div class="nav-item" onclick="goTo('cart')">
-    <span>🧹</span>Корзина
+    <span>🧺</span>Корзина
   </div>
   <div class="nav-item" onclick="goTo('favorites')">
     <span>❤️</span>Избранное
@@ -118,7 +118,9 @@
   </div>
 </div>
 
+<!-- ✅ ВЕРНАЯ ССЫЛКА НА БИБЛИОТЕКУ -->
 <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/tabletop.min.js"></script>
+
 <script>
   const spreadsheetKey = '1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o';
   let cart = [];
@@ -164,12 +166,14 @@
       });
     } else if (page === 'cart') {
       title.innerText = '🧺 Ваша корзина';
-      container.innerHTML = cart.length === 0 ? '<p>Корзина пуста.</p>' : cart.map(item => `
-        <div class="item">
-          <div class="title">${item.name}</div>
-          <div class="price">${item.price} руб.</div>
-        </div>
-      `).join('');
+      container.innerHTML = cart.length === 0
+        ? '<p>Корзина пуста.</p>'
+        : cart.map(item => `
+          <div class="item">
+            <div class="title">${item.name}</div>
+            <div class="price">${item.price} руб.</div>
+          </div>
+        `).join('');
     } else if (page === 'favorites') {
       title.innerText = '❤️ Избранное';
       container.innerHTML = '<p>Вы ещё не добавили товары в избранное.</p>';
