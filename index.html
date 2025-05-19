@@ -28,7 +28,7 @@
       color: #222;
       padding: 14px 28px;
       border-radius: 40px;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 500;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       opacity: 0;
@@ -233,10 +233,10 @@
 <body>
 
   <!-- Баннер -->
-  <div id="expand-banner">Для лучшего опыта разверните приложение на весь экран</div>
+  <div id="expand-banner">Разверните приложение на весь экран</div>
 
   <!-- Заголовок -->
-  <div id="page-title">🛍 Магазин одежды</div>
+  <div id="page-title">🛍 Магазин TERRIKON</div>
 
   <!-- Контейнер для товаров -->
   <div class="container" id="items"></div>
@@ -340,7 +340,7 @@
 
   // Загрузка «Магазина»
   function loadShop() {
-    document.getElementById('page-title').innerText = '🛍 Магазин одежды';
+    document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
     fetchItems()
       .then(renderItems)
       .catch(() => {
@@ -497,7 +497,33 @@
       hideModal();
     });
 
-    // Включаем свайпы для модалки
-    enableModalSwipe();
-  });
+    // --- BEGIN: свайпы между вкладками ---
+const tabs = ['tab-shop','tab-cart','tab-fav','tab-contact'];
+let touchStartX = 0;
+
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].clientX;
+});
+
+document.addEventListener('touchend', e => {
+  const touchEndX = e.changedTouches[0].clientX;
+  const delta = touchEndX - touchStartX;
+
+  if (Math.abs(delta) < 50) return; // короткий свайп игнорируем
+
+  // найдём, какая вкладка сейчас активна
+  const active = document.querySelector('.nav-item.active').id;
+  const idx = tabs.indexOf(active);
+
+  if (delta < 0) {
+    // свайп влево → следующая вкладка
+    const next = tabs[(idx + 1) % tabs.length];
+    document.getElementById(next).click();
+  } else {
+    // свайп вправо → предыдущая вкладка
+    const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+    document.getElementById(prev).click();
+  }
+});
+// --- END: свайпы между вкладками ---
 </script>
