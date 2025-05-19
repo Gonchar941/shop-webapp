@@ -118,7 +118,7 @@
   </div>
 </div>
 
-<!-- ✅ ПРАВИЛЬНАЯ ССЫЛКА НА БИБЛИОТЕКУ -->
+<!-- ✅ Подключение библиотеки Tabletop.js -->
 <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/tabletop.min.js"></script>
 
 <script>
@@ -129,7 +129,7 @@
     const container = document.getElementById('items');
     container.innerHTML = '';
     data.forEach(item => {
-      if (item['В наличии']?.toLowerCase() === 'да') {
+      if (item['В наличии']?.toLowerCase().includes('да')) {
         const div = document.createElement('div');
         div.className = 'item';
         div.innerHTML = `
