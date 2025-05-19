@@ -14,17 +14,19 @@
       padding-bottom: 80px;
     }
 
-    /* Баннёр с анимацией */
+    /* Баннеp «разверните приложение» */
     #expand-banner {
       position: fixed;
       top: 70px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: #fff;
-      padding: 16px 24px;
-      border-radius: 10px;
-      font-size: 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+      color: #222;
+      padding: 14px 28px;
+      border-radius: 40px;
+      font-size: 22px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       opacity: 0;
       z-index: 20;
     }
@@ -51,7 +53,7 @@
       z-index: 10;
     }
 
-    /* Контейнер товаров — адаптивно центрирует карточки */
+    /* Контейнер товаров – адаптивный flex */
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -84,7 +86,6 @@
     /* Фото */
     .item img {
       width: 100%;
-      /* aspect-ratio 1:1 для квадратного кадрирования */
       aspect-ratio: 1 / 1;
       object-fit: cover;
       display: block;
@@ -161,7 +162,7 @@
       margin-bottom: 2px;
     }
 
-    /* Модальное окно */
+    /* Модалка */
     .modal {
       display: none;
       position: fixed;
@@ -184,9 +185,17 @@
     }
     .modal-close {
       position: absolute;
-      top: 12px; right: 16px;
-      font-size: 24px;
+      top: 12px; right: 12px;
+      font-size: 28px;
+      background: #fff;
+      width: 36px; height: 36px;
+      line-height: 36px;
+      text-align: center;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
       cursor: pointer;
+      color: #333;
+      z-index: 25;
     }
     .modal-content img {
       width: 100%;
@@ -210,7 +219,7 @@
 </head>
 <body>
 
-  <!-- Баннер -->
+  <!-- Стильный баннер -->
   <div id="expand-banner">Для лучшего опыта разверните приложение на весь экран</div>
 
   <!-- Заголовок -->
@@ -227,10 +236,10 @@
     <div class="nav-item"><span>☎️</span>Контакты</div>
   </div>
 
-  <!-- Модалка -->
+  <!-- Модальное окно -->
   <div id="product-modal" class="modal">
     <div class="modal-content">
-      <span class="modal-close">&times;</span>
+      <div class="modal-close">&times;</div>
       <img id="modal-img" src="" alt="Фото товара">
       <h2 id="modal-title"></h2>
       <p class="price" id="modal-price"></p>
@@ -245,12 +254,19 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec';
     let cart = [];
+    let cachedItems = null;
     let currentItem = null;
 
-    // Показ баннера
+    // Показ баннера с анимацией
     function showBanner() {
-      const b = document.getElementById('expand-banner');
-      b.classList.add('show');
+      document.getElementById('expand-banner').classList.add('show');
+    }
+
+    // Фетчим данные один раз и кэшируем
+    function fetchItems() {
+      return fetch(API_URL)
+        .then(r => r.json())
+        .then(data => { cachedItems = data; return data; });
     }
 
     // Рендер карточек
@@ -272,29 +288,30 @@
               <button class="cart-btn">Добавить в корзину</button>
             </div>
           `;
-          // кнопка «в корзину»
+          // добавление в корзину без открытия модалки
           div.querySelector('.cart-btn').addEventListener('click', e => {
             e.stopPropagation();
             addToCart(item.Название, item.Цена);
           });
-          // клик по карточке — детали
+          // открытие модалки
           div.addEventListener('click', () => showDetails(item));
           c.appendChild(div);
         }
       });
     }
 
-    // Загрузка магазина
+    // Загрузка магазина — из кэша или сети
     function loadShop() {
       document.getElementById('page-title').innerText = '🛍 Магазин одежды';
-      fetch(API_URL)
-        .then(r => r.json())
-        .then(renderItems)
-        .catch(err => {
-          console.error(err);
-          document.getElementById('items').innerHTML =
-            '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
-        });
+      if (cachedItems) {
+        renderItems(cachedItems);
+      } else {
+        fetchItems().then(renderItems)
+          .catch(_=> {
+            document.getElementById('items').innerHTML =
+              '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
+          });
+      }
     }
 
     // Показ корзины
@@ -321,7 +338,7 @@
       alert(`Товар "${name}" добавлен в корзину!`);
     }
 
-    // Открыть детали модалки
+    // Открыть детали в модалке
     function showDetails(item) {
       currentItem = item;
       document.getElementById('modal-img').src = item['Фото (URL)'];
@@ -333,19 +350,22 @@
       document.getElementById('modal-desc').innerText = item['Описание (опц.)']||'-';
       document.getElementById('product-modal').classList.add('show');
     }
-    // Закрыть модалку
+
+    // Скрыть модалку
     function hideModal() {
       document.getElementById('product-modal').classList.remove('show');
     }
 
+    // Инициализация
     document.addEventListener('DOMContentLoaded', () => {
       showBanner();
       loadShop();
-      // клик вне контента — закрыть
+      // закрытие модалки по клику вне контента
       document.getElementById('product-modal')
         .addEventListener('click', e => { if (e.target.id==='product-modal') hideModal(); });
-      document.querySelector('.modal-close')
-        .addEventListener('click', hideModal);
+      // кнопка крестика
+      document.querySelector('.modal-close').addEventListener('click', hideModal);
+      // добавить в корзину из модалки
       document.getElementById('modal-add-btn')
         .addEventListener('click', () => {
           addToCart(currentItem.Название, currentItem.Цена);
