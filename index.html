@@ -459,7 +459,7 @@
     document.getElementById(id).classList.add('active');
   }
 
-    <!-- Инициализация событий после загрузки DOM -->
+      <!-- Инициализация событий после загрузки DOM -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Показываем баннер
@@ -485,22 +485,23 @@
         switchContent(showContacts);
       });
 
-      // Закрытие модалки
+      // Закрытие модалки по крестику и по клику вне контента
       document.querySelector('.modal-close').addEventListener('click', hideModal);
-      document.getElementById('product-modal')
-        .addEventListener('click', e => {
-          if (e.target.id === 'product-modal') hideModal();
-        });
+      document.getElementById('product-modal').addEventListener('click', e => {
+        if (e.target.id === 'product-modal') hideModal();
+      });
 
       // Кнопка «Добавить в корзину» в модалке
       document.getElementById('modal-add-btn').addEventListener('click', () => {
-        if (currentItem) addToCart(currentItem.Название, currentItem.Цена);
+        if (currentItem) {
+          addToCart(currentItem.Название, currentItem.Цена);
+        }
         hideModal();
       });
-    });  // ← вот эта строка добавлена: закрываем DOMContentLoaded
-
+    });
   </script>
 
 </body>
 </html>
+
 
