@@ -28,7 +28,7 @@
       color: #222;
       padding: 14px 28px;
       border-radius: 40px;
-      font-size: 22px;
+      font-size: 14px;
       font-weight: 500;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       opacity: 0;
@@ -68,7 +68,7 @@
       max-width: 1200px;
       margin: 0 auto;
       opacity: 1;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.15s ease;
     }
     .container.fade-out {
       opacity: 0;
@@ -335,7 +335,7 @@
     c.classList.add('fade-out');
     setTimeout(() => {
       renderFn();
-    }, 300);
+    }, 150);
   }
 
   // Загрузка «Магазина»
@@ -351,22 +351,24 @@
 
   // Показ «Корзины»
   function showCart() {
-  // 1. Обновляем заголовок
+  // 1. Заголовок
   document.getElementById('page-title').innerText = '🧺 Ваша корзина';
 
-  // 2. Готовим контейнер
+  // 2. Корневой контейнер
   const c = document.getElementById('items');
-  
-  // 3. Рисуем кнопку "Очистить корзину"
-  const clearBtn = `
-    <button id="clear-cart-btn"
-            class="cart-btn"
-            style="background:#dc3545; margin: 0 auto 16px; display:block;">
-      Очистить корзину
-    </button>
-  `;
 
-  // 4. Рисуем товары или сообщение о пустой корзине
+  // 3. Кнопка «Очистить корзину» только если есть товары
+  const clearBtn = cart.length > 0
+    ? `
+      <button id="clear-cart-btn"
+              class="cart-btn"
+              style="background:#dc3545; margin: 0 auto 16px; display:block;">
+        Очистить корзину
+      </button>
+    `
+    : '';
+
+  // 4. Список товаров или сообщение «Корзина пуста»
   const itemsHtml = cart.length === 0
     ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
     : cart.map(i => `
@@ -380,16 +382,18 @@
         </div>
       `).join('');
 
-  // 5. Вставляем в контейнер сначала кнопку, затем товары
+  // 5. Собираем окончательный HTML и рисуем его
   c.innerHTML = clearBtn + itemsHtml;
   c.classList.remove('fade-out');
 
-  // 6. Обработчик очистки корзины
-  document.getElementById('clear-cart-btn').addEventListener('click', () => {
-    cart = [];
-    localStorage.removeItem('cart');
-    showCart();  // перерисовать корзину
-  });
+  // 6. Только если кнопка есть – вешаем на неё обработчик
+  if (cart.length > 0) {
+    document.getElementById('clear-cart-btn').addEventListener('click', () => {
+      cart = [];
+      localStorage.removeItem('cart');
+      showCart(); // перерисуем пустую корзину
+    });
+  }
 }
 
   // Показ «Избранного»
