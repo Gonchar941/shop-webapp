@@ -42,7 +42,7 @@
       100% { opacity: 0; transform: translate(-50%, -20px); }
     }
     #expand-banner.show {
-      animation: fadeInOut 5s ease forwards;
+      animation: fadeInOut 4s ease forwards;
     }
 
     /* Заголовок страницы */
@@ -316,7 +316,7 @@
           `;
           div.querySelector('.cart-btn').addEventListener('click', e => {
             e.stopPropagation();
-            addToCart(item.Название, item.Цена);
+            addToCart(item.Название, item.Цена, item['Фото (URL)']);
           });
           div.addEventListener('click', () => showDetails(item));
           c.appendChild(div);
@@ -362,15 +362,21 @@
       `
       : '';
 
-    // 4. Список или пусто
-    const itemsHtml = cart.length === 0
-      ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
-      : cart.map(i => `
-          <div class="item"><div class="item-content"><div>
+// Новый вариант с изображением:
+const itemsHtml = cart.length === 0
+  ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
+  : cart.map(i => `
+      <div class="item">
+        <!-- Картинка появится так же, как в каталоге -->
+        <img src="${i.img}" alt="${i.name}">
+        <div class="item-content">
+          <div>
             <div class="title">${i.name}</div>
             <div class="price">${i.price} руб.</div>
-          </div></div></div>
-        `).join('');
+          </div>
+        </div>
+      </div>
+    `).join('');
 
     // 5. Вставка и убираем fade
     c.innerHTML = clearBtn + itemsHtml;
@@ -403,8 +409,8 @@
     }
 
     // Добавить в корзину
-    function addToCart(name, price) {
-      cart.push({ name, price });
+    function addToCart(name, price, img) {
+      cart.push({ name, price, img });
       localStorage.setItem('cart', JSON.stringify(cart));
       alert(`Товар "${name}" добавлен в корзину!`);
     }
@@ -475,7 +481,7 @@
 
       // Добавить в корзину из модалки
       document.getElementById('modal-add-btn').addEventListener('click', () => {
-        if (currentItem) addToCart(currentItem.Название, currentItem.Цена);
+        if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
         hideModal();
       });
 
