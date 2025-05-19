@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Магазин одежды</title>
+
+  <!-- Иконки Google Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
   <style>
     /* Сброс и базовые стили */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,7 +18,7 @@
       padding-bottom: 80px;
     }
 
-    /* Баннеp «разверните приложение» */
+    /* Баннер «разверните приложение» */
     #expand-banner {
       position: fixed;
       top: 70px;
@@ -40,7 +44,7 @@
       animation: fadeInOut 5s ease forwards;
     }
 
-    /* Заголовок */
+    /* Заголовок страницы */
     #page-title {
       text-align: center;
       font-size: 26px;
@@ -53,7 +57,7 @@
       z-index: 10;
     }
 
-    /* Контейнер товаров – адаптивный flex */
+    /* Контейнер товаров — адаптивный flex */
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -62,6 +66,11 @@
       justify-content: center;
       max-width: 1200px;
       margin: 0 auto;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+    .container.fade-out {
+      opacity: 0;
     }
 
     /* Карточка товара */
@@ -83,10 +92,10 @@
       box-shadow: 0 10px 24px rgba(0,0,0,0.1);
     }
 
-    /* Фото */
+    /* Фото товара */
     .item img {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1/1;
       object-fit: cover;
       display: block;
     }
@@ -135,7 +144,7 @@
     }
     .cart-btn:hover { background: #0b5ed7; }
 
-    /* Навигация */
+    /* Навигация (navbar) */
     .navbar {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -148,21 +157,24 @@
       box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
       z-index: 10;
     }
-    .nav-item {
+    .navbar .nav-item {
+      flex: 1;
       text-align: center;
-      font-size: 12px;
-      color: #555;
+      padding: 8px 0;
       cursor: pointer;
       transition: color 0.3s;
+      color: #555;
     }
-    .nav-item:hover { color: #0d6efd; }
-    .nav-item span {
+    .navbar .nav-item.active {
+      color: #0d6efd;
+    }
+    .navbar .nav-item i {
+      font-size: 24px;
       display: block;
-      font-size: 20px;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
-    /* Модалка */
+    /* Модальное окно */
     .modal {
       display: none;
       position: fixed;
@@ -183,6 +195,12 @@
       max-height: 90vh;
       overflow-y: auto;
     }
+    .modal-content img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 8px;
+    }
     .modal-close {
       position: absolute;
       top: 12px; right: 12px;
@@ -196,12 +214,6 @@
       cursor: pointer;
       color: #333;
       z-index: 25;
-    }
-    .modal-content img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      border-radius: 8px;
     }
     .modal-content h2 {
       margin: 16px 0 8px;
@@ -219,21 +231,33 @@
 </head>
 <body>
 
-  <!-- Стильный баннер -->
+  <!-- Баннер -->
   <div id="expand-banner">Для лучшего опыта разверните приложение на весь экран</div>
 
   <!-- Заголовок -->
   <div id="page-title">🛍 Магазин одежды</div>
 
-  <!-- Сетка товаров -->
+  <!-- Контейнер для товаров -->
   <div class="container" id="items"></div>
 
   <!-- Навигация -->
   <div class="navbar">
-    <div class="nav-item" onclick="loadShop()"><span>🏦</span>Магазин</div>
-    <div class="nav-item" onclick="showCart()"><span>🧺</span>Корзина</div>
-    <div class="nav-item"><span>❤️</span>Избранное</div>
-    <div class="nav-item"><span>☎️</span>Контакты</div>
+    <div class="nav-item active" id="tab-shop">
+      <i class="material-icons">storefront</i>
+      Магазин
+    </div>
+    <div class="nav-item" id="tab-cart">
+      <i class="material-icons">shopping_cart</i>
+      Корзина
+    </div>
+    <div class="nav-item" id="tab-fav">
+      <i class="material-icons">favorite</i>
+      Избранное
+    </div>
+    <div class="nav-item" id="tab-contact">
+      <i class="material-icons">contacts</i>
+      Контакты
+    </div>
   </div>
 
   <!-- Модальное окно -->
@@ -250,128 +274,197 @@
       <button class="cart-btn" id="modal-add-btn">Добавить в корзину</button>
     </div>
   </div>
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec';
+  let cart = [];
+  let cachedItems = null;
+  let currentItem = null;
 
-  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec';
-    let cart = [];
-    let cachedItems = null;
-    let currentItem = null;
+  // Показ баннера с анимацией
+  function showBanner() {
+    document.getElementById('expand-banner').classList.add('show');
+  }
 
-    // Показ баннера с анимацией
-    function showBanner() {
-      document.getElementById('expand-banner').classList.add('show');
-    }
+  // Получаем данные из API и кэшируем
+  function fetchItems() {
+    if (cachedItems) return Promise.resolve(cachedItems);
+    return fetch(API_URL)
+      .then(r => r.json())
+      .then(data => { cachedItems = data; return data; });
+  }
 
-    // Фетчим данные один раз и кэшируем
-    function fetchItems() {
-      return fetch(API_URL)
-        .then(r => r.json())
-        .then(data => { cachedItems = data; return data; });
-    }
+  // Рендер карточек
+  function renderItems(data) {
+    const c = document.getElementById('items');
+    c.innerHTML = '';
+    data.forEach(item => {
+      if ((item['В наличии']||'').toLowerCase().includes('да')) {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <img src="${item['Фото (URL)']}" alt="${item.Название}">
+          <div class="item-content">
+            <div>
+              <div class="title">${item.Название}</div>
+              <div class="price">${item.Цена} руб.</div>
+              <div class="status"></div>
+            </div>
+            <button class="cart-btn">Добавить в корзину</button>
+          </div>
+        `;
+        // кнопка «Добавить в корзину»
+        div.querySelector('.cart-btn').addEventListener('click', e => {
+          e.stopPropagation();
+          addToCart(item.Название, item.Цена);
+        });
+        // открытие модалки при клике на карточку
+        div.addEventListener('click', () => showDetails(item));
+        c.appendChild(div);
+      }
+    });
+    // Если анимация была, вернуть opacity
+    c.classList.remove('fade-out');
+  }
 
-    // Рендер карточек
-    function renderItems(data) {
-      const c = document.getElementById('items');
-      c.innerHTML = '';
-      data.forEach(item => {
-        if ((item['В наличии']||'').toLowerCase().includes('да')) {
-          const div = document.createElement('div');
-          div.className = 'item';
-          div.innerHTML = `
-            <img src="${item['Фото (URL)']}" alt="${item.Название}">
+  // Плавное переключение содержимого
+  function switchContent(renderFn) {
+    const c = document.getElementById('items');
+    c.classList.add('fade-out');
+    setTimeout(() => {
+      renderFn();
+    }, 300);
+  }
+
+  // Загрузка «Магазина»
+  function loadShop() {
+    document.getElementById('page-title').innerText = '🛍 Магазин одежды';
+    fetchItems()
+      .then(renderItems)
+      .catch(() => {
+        document.getElementById('items').innerHTML =
+          '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
+      });
+  }
+
+  // Показ «Корзины»
+  function showCart() {
+    document.getElementById('page-title').innerText = '🧺 Ваша корзина';
+    const c = document.getElementById('items');
+    c.innerHTML = cart.length === 0
+      ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
+      : cart.map(i => `
+          <div class="item">
             <div class="item-content">
               <div>
-                <div class="title">${item.Название}</div>
-                <div class="price">${item.Цена} руб.</div>
-                <div class="status"></div>
-              </div>
-              <button class="cart-btn">Добавить в корзину</button>
-            </div>
-          `;
-          // добавление в корзину без открытия модалки
-          div.querySelector('.cart-btn').addEventListener('click', e => {
-            e.stopPropagation();
-            addToCart(item.Название, item.Цена);
-          });
-          // открытие модалки
-          div.addEventListener('click', () => showDetails(item));
-          c.appendChild(div);
-        }
-      });
-    }
-
-    // Загрузка магазина — из кэша или сети
-    function loadShop() {
-      document.getElementById('page-title').innerText = '🛍 Магазин одежды';
-      if (cachedItems) {
-        renderItems(cachedItems);
-      } else {
-        fetchItems().then(renderItems)
-          .catch(_=> {
-            document.getElementById('items').innerHTML =
-              '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
-          });
-      }
-    }
-
-    // Показ корзины
-    function showCart() {
-      document.getElementById('page-title').innerText = '🧺 Ваша корзина';
-      const c = document.getElementById('items');
-      c.innerHTML = cart.length === 0
-        ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
-        : cart.map(i => `
-            <div class="item">
-              <div class="item-content">
-                <div>
-                  <div class="title">${i.name}</div>
-                  <div class="price">${i.price} руб.</div>
-                </div>
+                <div class="title">${i.name}</div>
+                <div class="price">${i.price} руб.</div>
               </div>
             </div>
-          `).join('');
-    }
+          </div>
+        `).join('');
+    c.classList.remove('fade-out');
+  }
 
-    // Добавить в корзину
-    function addToCart(name, price) {
-      cart.push({ name, price });
-      alert(`Товар "${name}" добавлен в корзину!`);
-    }
+  // Показ «Избранного»
+  function showFavorites() {
+    document.getElementById('page-title').innerText = '❤️ Избранное';
+    document.getElementById('items').innerHTML =
+      '<p style="padding:24px; text-align:center;">Здесь будут ваши избранные товары.</p>';
+    document.getElementById('items').classList.remove('fade-out');
+  }
 
-    // Открыть детали в модалке
-    function showDetails(item) {
-      currentItem = item;
-      document.getElementById('modal-img').src = item['Фото (URL)'];
-      document.getElementById('modal-title').innerText = item.Название;
-      document.getElementById('modal-price').innerText = item.Цена + ' руб.';
-      document.getElementById('modal-status').innerText = 'В наличии';
-      document.getElementById('modal-category').innerText = item['Категория']||'-';
-      document.getElementById('modal-sizes').innerText = item['Размеры']||'-';
-      document.getElementById('modal-desc').innerText = item['Описание (опц.)']||'-';
-      document.getElementById('product-modal').classList.add('show');
-    }
+  // Показ «Контактов»
+  function showContacts() {
+    document.getElementById('page-title').innerText = '☎️ Контакты';
+    document.getElementById('items').innerHTML =
+      '<p style="padding:24px; text-align:center;">Контактная информация появится здесь.</p>';
+    document.getElementById('items').classList.remove('fade-out');
+  }
 
-    // Скрыть модалку
-    function hideModal() {
-      document.getElementById('product-modal').classList.remove('show');
-    }
+  // Добавить в корзину
+  function addToCart(name, price) {
+    cart.push({ name, price });
+    alert(`Товар "${name}" добавлен в корзину!`);
+  }
 
-    // Инициализация
-    document.addEventListener('DOMContentLoaded', () => {
-      showBanner();
-      loadShop();
-      // закрытие модалки по клику вне контента
-      document.getElementById('product-modal')
-        .addEventListener('click', e => { if (e.target.id==='product-modal') hideModal(); });
-      // кнопка крестика
-      document.querySelector('.modal-close').addEventListener('click', hideModal);
-      // добавить в корзину из модалки
-      document.getElementById('modal-add-btn')
-        .addEventListener('click', () => {
-          addToCart(currentItem.Название, currentItem.Цена);
-          hideModal();
-        });
+  // Заполнить и показать модалку
+  function showDetails(item) {
+    currentItem = item;
+    document.getElementById('modal-img').src = item['Фото (URL)'];
+    document.getElementById('modal-title').innerText = item.Название;
+    document.getElementById('modal-price').innerText = item.Цена + ' руб.';
+    document.getElementById('modal-status').innerText = 'В наличии';
+    document.getElementById('modal-category').innerText = item['Категория']||'-';
+    document.getElementById('modal-sizes').innerText = item['Размеры']||'-';
+    document.getElementById('modal-desc').innerText = item['Описание (опц.)']||'-';
+    document.getElementById('product-modal').classList.add('show');
+  }
+
+  // Скрыть модалку
+  function hideModal() {
+    document.getElementById('product-modal').classList.remove('show');
+  }
+
+  // Обработка свайпа вниз для закрытия модалки
+  function enableModalSwipe() {
+    let startY = 0;
+    const mc = document.querySelector('.modal-content');
+    mc.addEventListener('touchstart', e => {
+      startY = e.changedTouches[0].clientY;
     });
-  </script>
-</body>
-</html>
+    mc.addEventListener('touchend', e => {
+      const endY = e.changedTouches[0].clientY;
+      if (endY - startY > 100) { // свайп вниз более 100px
+        hideModal();
+      }
+    });
+  }
+
+  // Установить активную вкладку
+  function setActiveTab(id) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // Инициализация событий после загрузки DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    // Показываем баннер
+    showBanner();
+    // Загружаем магазин по умолчанию
+    loadShop();
+
+    // Навигация с анимацией и подсветкой
+    document.getElementById('tab-shop').addEventListener('click', () => {
+      setActiveTab('tab-shop');
+      switchContent(loadShop);
+    });
+    document.getElementById('tab-cart').addEventListener('click', () => {
+      setActiveTab('tab-cart');
+      switchContent(showCart);
+    });
+    document.getElementById('tab-fav').addEventListener('click', () => {
+      setActiveTab('tab-fav');
+      switchContent(showFavorites);
+    });
+    document.getElementById('tab-contact').addEventListener('click', () => {
+      setActiveTab('tab-contact');
+      switchContent(showContacts);
+    });
+
+    // Закрытие модалки
+    document.querySelector('.modal-close').addEventListener('click', hideModal);
+    document.getElementById('product-modal')
+      .addEventListener('click', e => {
+        if (e.target.id === 'product-modal') hideModal();
+      });
+
+    // Кнопка «Добавить в корзину» в модалке
+    document.getElementById('modal-add-btn').addEventListener('click', () => {
+      if (currentItem) addToCart(currentItem.Название, currentItem.Цена);
+      hideModal();
+    });
+
+    // Включаем свайпы для модалки
+    enableModalSwipe();
+  });
+</script>
