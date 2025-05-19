@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Магазин одежды</title>
   <style>
     body {
@@ -104,32 +104,30 @@
 <div class="container" id="items"></div>
 
 <div class="navbar">
-  <div class="nav-item" onclick="goTo('shop')">
+  <div class="nav-item" onclick="loadShop()">
     <span>🏦</span>Магазин
   </div>
-  <div class="nav-item" onclick="goTo('cart')">
+  <div class="nav-item" onclick="showCart()">
     <span>🧺</span>Корзина
   </div>
-  <div class="nav-item" onclick="goTo('favorites')">
+  <div class="nav-item">
     <span>❤️</span>Избранное
   </div>
-  <div class="nav-item" onclick="goTo('contacts')">
+  <div class="nav-item">
     <span>☎️</span>Контакты
   </div>
 </div>
 
-<!-- ✅ Подключение библиотеки Tabletop.js -->
-<script src="./tabletop.js"></script>
-
 <script>
-  const spreadsheetKey = '1U6g4JWqx3laPgtCnjYuPLOb31g-q5_Qpc-GxmvJ_W2o';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec'; // ← замени на URL, который даст Apps Script
   let cart = [];
 
-  function showShop(data) {
+  function renderItems(data) {
     const container = document.getElementById('items');
     container.innerHTML = '';
+
     data.forEach(item => {
-      if (item['В наличии']?.toLowerCase().includes('да')) {
+      if ((item['В наличии'] || '').toLowerCase().includes('да')) {
         const div = document.createElement('div');
         div.className = 'item';
         div.innerHTML = `
@@ -146,46 +144,37 @@
 
   function addToCart(name, price) {
     cart.push({ name, price });
-    alert(`Товар “${name}” добавлен в корзину!`);
+    alert(`Товар "${name}" добавлен в корзину!`);
   }
 
-  function goTo(page) {
+  function showCart() {
     const container = document.getElementById('items');
     const title = document.getElementById('page-title');
-
-    if (page === 'shop') {
-      title.innerText = '🛍 Магазин одежды';
-      Tabletop.init({
-        key: spreadsheetKey,
-        simpleSheet: true,
-        callback: showShop
-      });
-    } else if (page === 'cart') {
-      title.innerText = '🧺 Ваша корзина';
-      container.innerHTML = cart.length === 0
-        ? '<p>Корзина пуста.</p>'
-        : cart.map(item => `
+    title.innerText = '🧺 Ваша корзина';
+    container.innerHTML = cart.length === 0
+      ? '<p>Корзина пуста.</p>'
+      : cart.map(item => `
           <div class="item">
             <div class="title">${item.name}</div>
             <div class="price">${item.price} руб.</div>
           </div>
         `).join('');
-    } else if (page === 'favorites') {
-      title.innerText = '❤️ Избранное';
-      container.innerHTML = '<p>Вы ещё не добавили товары в избранное.</p>';
-    } else if (page === 'contacts') {
-      title.innerText = '☎️ Контакты';
-      container.innerHTML = '<p>Связь: @your_tg или +7 900 000 00 00</p>';
-    }
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    Tabletop.init({
-      key: spreadsheetKey,
-      simpleSheet: true,
-      callback: showShop
-    });
-  });
+  function loadShop() {
+    const title = document.getElementById('page-title');
+    title.innerText = '🛍 Магазин одежды';
+
+    fetch(API_URL)
+      .then(response => response.json())
+      .then(data => renderItems(data))
+      .catch(error => {
+        console.error('Ошибка загрузки:', error);
+        document.getElementById('items').innerHTML = '<p>Не удалось загрузить товары.</p>';
+      });
+  }
+
+  window.addEventListener('DOMContentLoaded', loadShop);
 </script>
 
 </body>
