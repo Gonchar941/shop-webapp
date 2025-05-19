@@ -459,44 +459,48 @@
     document.getElementById(id).classList.add('active');
   }
 
-  // Инициализация событий после загрузки DOM
-  document.addEventListener('DOMContentLoaded', () => {
-    // Показываем баннер
-    showBanner();
-    // Загружаем магазин по умолчанию
-    loadShop();
+    <!-- Инициализация событий после загрузки DOM -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Показываем баннер
+      showBanner();
+      // Загружаем магазин по умолчанию
+      loadShop();
 
-    // Навигация с анимацией и подсветкой
-    document.getElementById('tab-shop').addEventListener('click', () => {
-      setActiveTab('tab-shop');
-      switchContent(loadShop);
-    });
-    document.getElementById('tab-cart').addEventListener('click', () => {
-      setActiveTab('tab-cart');
-      switchContent(showCart);
-    });
-    document.getElementById('tab-fav').addEventListener('click', () => {
-      setActiveTab('tab-fav');
-      switchContent(showFavorites);
-    });
-    document.getElementById('tab-contact').addEventListener('click', () => {
-      setActiveTab('tab-contact');
-      switchContent(showContacts);
-    });
-
-    // Закрытие модалки
-    document.querySelector('.modal-close').addEventListener('click', hideModal);
-    document.getElementById('product-modal')
-      .addEventListener('click', e => {
-        if (e.target.id === 'product-modal') hideModal();
+      // Навигация с анимацией и подсветкой
+      document.getElementById('tab-shop').addEventListener('click', () => {
+        setActiveTab('tab-shop');
+        switchContent(loadShop);
+      });
+      document.getElementById('tab-cart').addEventListener('click', () => {
+        setActiveTab('tab-cart');
+        switchContent(showCart);
+      });
+      document.getElementById('tab-fav').addEventListener('click', () => {
+        setActiveTab('tab-fav');
+        switchContent(showFavorites);
+      });
+      document.getElementById('tab-contact').addEventListener('click', () => {
+        setActiveTab('tab-contact');
+        switchContent(showContacts);
       });
 
-    // Кнопка «Добавить в корзину» в модалке
-    document.getElementById('modal-add-btn').addEventListener('click', () => {
-      if (currentItem) addToCart(currentItem.Название, currentItem.Цена);
-      hideModal();
-    });
-</script>
+      // Закрытие модалки
+      document.querySelector('.modal-close').addEventListener('click', hideModal);
+      document.getElementById('product-modal')
+        .addEventListener('click', e => {
+          if (e.target.id === 'product-modal') hideModal();
+        });
+
+      // Кнопка «Добавить в корзину» в модалке
+      document.getElementById('modal-add-btn').addEventListener('click', () => {
+        if (currentItem) addToCart(currentItem.Название, currentItem.Цена);
+        hideModal();
+      });
+    });  // ← вот эта строка добавлена: закрываем DOMContentLoaded
+
+  </script>
 
 </body>
 </html>
+
