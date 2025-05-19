@@ -5,60 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Магазин одежды</title>
   <style>
-    body {
+    /* Сброс отступов и базовый шрифт */
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f0f0f5;
+      background: #f8f9fa;
+      color: #333;
       padding-bottom: 80px;
     }
+
+    /* Сетка товаров */
     .container {
-      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
+
+    /* Карточка товара */
     .item {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      padding: 15px;
-      margin-bottom: 20px;
-      transition: transform 0.2s ease;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
     }
     .item:hover {
-      transform: scale(1.01);
+      transform: translateY(-6px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.1);
     }
+
+    /* Изображение */
     .item img {
       width: 100%;
-      border-radius: 8px;
+      height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Контент карточки */
+    .item-content {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .title {
-      font-size: 18px;
-      margin-top: 10px;
+      font-size: 20px;
       font-weight: 600;
+      margin-bottom: 8px;
+      color: #222;
     }
     .price {
-      color: #198754;
+      font-size: 18px;
       font-weight: bold;
-      margin: 5px 0;
+      color: #198754;
+      margin-bottom: 8px;
     }
     .status {
       font-size: 14px;
-      color: #777;
-      margin-bottom: 10px;
+      color: #28a745;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
     }
+    .status::before {
+      content: "✅";
+    }
+
+    /* Кнопка */
     .cart-btn {
       background: #0d6efd;
       color: #fff;
-      padding: 10px;
-      width: 100%;
-      text-align: center;
+      padding: 12px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
       transition: background 0.3s ease;
+      margin-top: auto;
     }
     .cart-btn:hover {
       background: #0b5ed7;
     }
+
+    /* Заголовок страницы */
+    #page-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+      padding: 24px 0;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    /* Навигация */
     .navbar {
       position: fixed;
       bottom: 0;
@@ -69,9 +125,9 @@
       display: flex;
       justify-content: space-around;
       align-items: center;
-      border-top: 1px solid #ccc;
-      box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-      z-index: 999;
+      border-top: 1px solid #ddd;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+      z-index: 10;
     }
     .nav-item {
       text-align: center;
@@ -86,96 +142,98 @@
     .nav-item span {
       display: block;
       font-size: 20px;
-    }
-    #page-title {
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      padding: 15px 0;
-      background-color: #fff;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      margin-bottom: 2px;
     }
   </style>
 </head>
 <body>
 
-<div id="page-title">🛍 Магазин одежды</div>
-<div class="container" id="items"></div>
+  <div id="page-title">🛍 Магазин одежды</div>
 
-<div class="navbar">
-  <div class="nav-item" onclick="loadShop()">
-    <span>🏦</span>Магазин
+  <div class="container" id="items"></div>
+
+  <div class="navbar">
+    <div class="nav-item" onclick="loadShop()">
+      <span>🏦</span>Магазин
+    </div>
+    <div class="nav-item" onclick="showCart()">
+      <span>🧺</span>Корзина
+    </div>
+    <div class="nav-item">
+      <span>❤️</span>Избранное
+    </div>
+    <div class="nav-item">
+      <span>☎️</span>Контакты
+    </div>
   </div>
-  <div class="nav-item" onclick="showCart()">
-    <span>🧺</span>Корзина
-  </div>
-  <div class="nav-item">
-    <span>❤️</span>Избранное
-  </div>
-  <div class="nav-item">
-    <span>☎️</span>Контакты
-  </div>
-</div>
 
-<script>
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec'; // ← замени на URL, который даст Apps Script
-  let cart = [];
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec'; // ← замените на URL из Apps Script
+    let cart = [];
 
-  function renderItems(data) {
-    const container = document.getElementById('items');
-    container.innerHTML = '';
-
-    data.forEach(item => {
-      if ((item['В наличии'] || '').toLowerCase().includes('да')) {
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `
-          <img src="${item['Фото (URL)']}" alt="${item.Название}">
-          <div class="title">${item.Название}</div>
-          <div class="price">${item.Цена} руб.</div>
-          <div class="status">✅ В наличии</div>
-          <button class="cart-btn" onclick="addToCart('${item.Название}', '${item.Цена}')">Добавить в корзину</button>
-        `;
-        container.appendChild(div);
-      }
-    });
-  }
-
-  function addToCart(name, price) {
-    cart.push({ name, price });
-    alert(`Товар "${name}" добавлен в корзину!`);
-  }
-
-  function showCart() {
-    const container = document.getElementById('items');
-    const title = document.getElementById('page-title');
-    title.innerText = '🧺 Ваша корзина';
-    container.innerHTML = cart.length === 0
-      ? '<p>Корзина пуста.</p>'
-      : cart.map(item => `
-          <div class="item">
-            <div class="title">${item.name}</div>
-            <div class="price">${item.price} руб.</div>
-          </div>
-        `).join('');
-  }
-
-  function loadShop() {
-    const title = document.getElementById('page-title');
-    title.innerText = '🛍 Магазин одежды';
-
-    fetch(API_URL)
-      .then(response => response.json())
-      .then(data => renderItems(data))
-      .catch(error => {
-        console.error('Ошибка загрузки:', error);
-        document.getElementById('items').innerHTML = '<p>Не удалось загрузить товары.</p>';
+    function renderItems(data) {
+      const container = document.getElementById('items');
+      container.innerHTML = '';
+      data.forEach(item => {
+        if ((item['В наличии'] || '').toLowerCase().includes('да')) {
+          const div = document.createElement('div');
+          div.className = 'item';
+          div.innerHTML = `
+            <img src="${item['Фото (URL)']}" alt="${item.Название}">
+            <div class="item-content">
+              <div>
+                <div class="title">${item.Название}</div>
+                <div class="price">${item.Цена} руб.</div>
+                <div class="status"></div>
+              </div>
+              <button class="cart-btn" onclick="addToCart('${item.Название}', '${item.Цена}')">
+                Добавить в корзину
+              </button>
+            </div>
+          `;
+          container.appendChild(div);
+        }
       });
-  }
+    }
 
-  window.addEventListener('DOMContentLoaded', loadShop);
-</script>
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      alert(`Товар "${name}" добавлен в корзину!`);
+    }
+
+    function showCart() {
+      const container = document.getElementById('items');
+      const title = document.getElementById('page-title');
+      title.innerText = '🧺 Ваша корзина';
+      container.innerHTML = cart.length === 0
+        ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
+        : cart.map(item => `
+            <div class="item">
+              <div class="item-content">
+                <div>
+                  <div class="title">${item.name}</div>
+                  <div class="price">${item.price} руб.</div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+    }
+
+    function loadShop() {
+      const title = document.getElementById('page-title');
+      title.innerText = '🛍 Магазин одежды';
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => renderItems(data))
+        .catch(err => {
+          console.error('Ошибка загрузки:', err);
+          document.getElementById('items').innerHTML = 
+            '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', loadShop);
+  </script>
 
 </body>
 </html>
