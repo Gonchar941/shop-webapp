@@ -496,34 +496,4 @@
       if (currentItem) addToCart(currentItem.Название, currentItem.Цена);
       hideModal();
     });
-
-    // --- BEGIN: свайпы между вкладками ---
-const tabs = ['tab-shop','tab-cart','tab-fav','tab-contact'];
-let touchStartX = 0;
-
-document.addEventListener('touchstart', e => {
-  touchStartX = e.changedTouches[0].clientX;
-});
-
-document.addEventListener('touchend', e => {
-  const touchEndX = e.changedTouches[0].clientX;
-  const delta = touchEndX - touchStartX;
-
-  if (Math.abs(delta) < 50) return; // короткий свайп игнорируем
-
-  // найдём, какая вкладка сейчас активна
-  const active = document.querySelector('.nav-item.active').id;
-  const idx = tabs.indexOf(active);
-
-  if (delta < 0) {
-    // свайп влево → следующая вкладка
-    const next = tabs[(idx + 1) % tabs.length];
-    document.getElementById(next).click();
-  } else {
-    // свайп вправо → предыдущая вкладка
-    const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
-    document.getElementById(prev).click();
-  }
-});
-// --- END: свайпы между вкладками ---
 </script>
