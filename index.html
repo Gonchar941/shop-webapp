@@ -33,6 +33,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       opacity: 0;
       z-index: 20;
+      white-space: nowrap;
     }
     @keyframes fadeInOut {
       0%   { opacity: 0; transform: translate(-50%, -20px); }
@@ -276,7 +277,9 @@
   </div>
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec';
-  let cart = [];
+  // подгружаем сохранённую корзину или создаём пустую
+  let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
   let cachedItems = null;
   let currentItem = null;
 
@@ -348,22 +351,46 @@
 
   // Показ «Корзины»
   function showCart() {
-    document.getElementById('page-title').innerText = '🧺 Ваша корзина';
-    const c = document.getElementById('items');
-    c.innerHTML = cart.length === 0
-      ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
-      : cart.map(i => `
-          <div class="item">
-            <div class="item-content">
-              <div>
-                <div class="title">${i.name}</div>
-                <div class="price">${i.price} руб.</div>
-              </div>
+  // 1. Обновляем заголовок
+  document.getElementById('page-title').innerText = '🧺 Ваша корзина';
+
+  // 2. Готовим контейнер
+  const c = document.getElementById('items');
+  
+  // 3. Рисуем кнопку "Очистить корзину"
+  const clearBtn = `
+    <button id="clear-cart-btn"
+            class="cart-btn"
+            style="background:#dc3545; margin: 0 auto 16px; display:block;">
+      Очистить корзину
+    </button>
+  `;
+
+  // 4. Рисуем товары или сообщение о пустой корзине
+  const itemsHtml = cart.length === 0
+    ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
+    : cart.map(i => `
+        <div class="item">
+          <div class="item-content">
+            <div>
+              <div class="title">${i.name}</div>
+              <div class="price">${i.price} руб.</div>
             </div>
           </div>
-        `).join('');
-    c.classList.remove('fade-out');
-  }
+        </div>
+      `).join('');
+
+  // 5. Вставляем в контейнер сначала кнопку, затем товары
+  c.innerHTML = clearBtn + itemsHtml;
+  c.classList.remove('fade-out');
+
+  // 6. Обработчик очистки корзины
+  document.getElementById('clear-cart-btn').addEventListener('click', () => {
+    cart = [];
+    localStorage.removeItem('cart');
+    showCart();  // перерисовать корзину
+  });
+}
 
   // Показ «Избранного»
   function showFavorites() {
@@ -384,6 +411,8 @@
   // Добавить в корзину
   function addToCart(name, price) {
     cart.push({ name, price });
+    // обновляем localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
     alert(`Товар "${name}" добавлен в корзину!`);
   }
 
