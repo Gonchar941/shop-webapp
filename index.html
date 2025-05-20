@@ -15,7 +15,7 @@
       font-family: 'Segoe UI', sans-serif;
       background: #f8f9fa;
       color: #333;
-      padding-top: 130px;   /* место под меню сверху */
+      padding-top: 130px;
       padding-bottom: 20px;
     }
 
@@ -60,8 +60,8 @@
     /* Заголовок страницы */
     #page-title {
       text-align: center; font-size: 26px; font-weight: bold;
-      padding: 24px 0; background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 24px 0; background: linear-gradient(90deg,#4e54c8,#8f94fb);
+      color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       position: sticky; top: 60px; z-index: 10;
       transition: top 0.3s ease;
     }
@@ -73,20 +73,19 @@
       transition: opacity 0.3s ease;
     }
     .filters.hidden {
-      opacity: 0; pointer-events: none;
-      height: 0; overflow: hidden;
+      opacity: 0; pointer-events: none; height: 0; overflow: hidden;
     }
     .filter-bar {
       display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
     }
     .filter-btn {
-      background: #e9ecef; border: none; padding: 8px 16px;
-      border-radius: 20px; cursor: pointer; transition: background 0.2s;
-      font-size: 14px;
+      background: #fff; border: 1px solid #ddd; padding: 8px 16px;
+      border-radius: 20px; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08); font-size: 14px;
     }
-    .filter-btn:hover { background: #dcdfe1; }
+    .filter-btn:hover { background: #f0f0f5; }
     .filter-btn.active {
-      background: #0d6efd; color: #fff;
+      background: #4e54c8; border-color: #4e54c8; color: #fff;
     }
 
     /* Контейнер товаров */
@@ -99,11 +98,10 @@
 
     /* Карточка товара */
     .item {
-      background: #fff; border-radius: 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-      overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer; display: flex; flex-direction: column;
-      text-align: center; width: 100%; max-width: 320px;
+      background: #fff; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06); transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer; display: flex; flex-direction: column; text-align: center;
+      width: 100%; max-width: 320px;
     }
     .item:hover {
       transform: translateY(-6px);
@@ -113,31 +111,22 @@
       width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block;
     }
 
-    /* Модальное окно */
-    .modal {
-      display: none; position: fixed; top:0; left:0;
-      width:100%; height:100%; background: rgba(0,0,0,0.5);
-      justify-content: center; align-items: center; z-index: 20;
+    /* Кнопка в карточке и модалке */
+    .cart-btn {
+      background: linear-gradient(90deg,#ff8a00,#e52e71);
+      color: #fff; padding: 12px; border: none; border-radius: 8px;
+      cursor: pointer; font-size: 16px; transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(229,46,113,0.3);
     }
-    .modal.show { display: flex; }
-    .modal-content {
-      background: #fff; border-radius: 12px; width: 90%; max-width: 600px;
-      padding: 20px; position: relative; max-height: 90vh; overflow-y: auto;
-    }
-    .modal-content img {
-      width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px;
-    }
-    .modal-close {
-      position: absolute; top:12px; right:12px; font-size:28px;
-      background:#fff; width:36px; height:36px; line-height:36px;
-      text-align:center; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,0.15);
-      cursor:pointer; color:#333; z-index:25;
+    .cart-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(229,46,113,0.4);
     }
   </style>
 </head>
 <body>
 
-  <!-- Навигация (сверху) -->
+  <!-- Навигация сверху -->
   <div class="navbar" id="navbar">
     <div class="nav-item active" id="tab-shop">
       <i class="material-icons">storefront</i> Магазин
@@ -152,6 +141,7 @@
       <i class="material-icons">contacts</i> Контакты
     </div>
   </div>
+
   <!-- Баннер и заголовок -->
   <div id="expand-banner">Разверните приложение на весь экран</div>
   <div id="page-title">🛍 Магазин TERRIKON</div>
@@ -169,37 +159,69 @@
   <!-- Контейнер для товаров -->
   <div class="container" id="items"></div>
 
-  <!-- Модальное окно -->
-  <div id="product-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-close">&times;</div>
-      <img id="modal-img" src="" alt="Фото товара">
-      <h2 id="modal-title"></h2>
-      <p class="price" id="modal-price"></p>
-      <p class="status" id="modal-status">В наличии</p>
-      <p><strong>Категория:</strong> <span id="modal-category"></span></p>
-      <p><strong>Размеры:</strong> <span id="modal-sizes"></span></p>
-      <p><strong>Описание:</strong> <span id="modal-desc"></span></p>
-      <button class="cart-btn" id="modal-add-btn">Добавить в корзину</button>
-    </div>
-  </div>
-
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxv5KowU_7_PWWasCQV-0dVHxcg4nN2L47Dz0kYPsMBChwMPtWCPMDaY4jjNxl2XVLU_A/exec';
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    let cachedItems = null, currentItem = null, currentGender = '', currentType = '';
 
-    function showBanner() {
-      document.getElementById('expand-banner').classList.add('show');
+    // фикс: сразу обновляем корзину при добавлении
+    function addToCart(name, price, img) {
+      cart.push({ name, price, img });
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(`Товар "${name}" добавлен в корзину!`);
+      if (document.getElementById('tab-cart').classList.contains('active')) {
+        showCart();
+      }
     }
 
+    function showCart() {
+      document.getElementById('page-title').innerText = '🧺 Ваша корзина';
+      const c = document.getElementById('items');
+      const clearBtn = cart.length
+        ? `<button id="clear-cart-btn" class="cart-btn" style="background:#dc3545;margin:0 auto 16px;display:block;">Очистить корзину</button>`
+        : '';
+      const itemsHtml = cart.length
+        ? cart.map(i => `
+            <div class="item">
+              <img src="${i.img}">
+              <div class="item-content">
+                <div class="title">${i.name}</div>
+                <div class="price">${i.price} руб.</div>
+              </div>
+            </div>`).join('')
+        : '<p style="padding:24px;text-align:center;">Корзина пуста.</p>';
+      c.innerHTML = clearBtn + itemsHtml;
+      document.getElementById('filters').classList.add('hidden');
+      if (cart.length) {
+        document.getElementById('clear-cart-btn').onclick = () => {
+          cart = []; localStorage.removeItem('cart'); showCart();
+        };
+      }
+    }
+
+    // … остальной JS (fetchItems, renderItems, initTypeFilter, навигация, скролл и т.д.) пойдёт во второй части …
+  </script>
+  <!-- Остальной JavaScript и закрытие HTML -->
+
+  <script>
+    // Дополнительные глобальные переменные
+    let cachedItems = null,
+        currentItem = null,
+        currentGender = '',
+        currentType = '';
+
+    // 1. Получаем и кэшируем данные, заполняем фильтр типов
     function fetchItems() {
       if (cachedItems) return Promise.resolve(cachedItems);
       return fetch(API_URL)
         .then(r => r.json())
-        .then(data => { cachedItems = data; initTypeFilter(data); return data; });
+        .then(data => {
+          cachedItems = data;
+          initTypeFilter(data);
+          return data;
+        });
     }
 
+    // 2. Инициализируем фильтр «Тип одежды» после выбора пола
     function initTypeFilter(data) {
       const types = new Set();
       data.forEach(item => {
@@ -222,13 +244,16 @@
       });
     }
 
+    // 3. Применяем фильтр типов и перерисовываем товары
     function applyTypeFilter(type) {
       currentType = type;
       document.querySelectorAll('#type-filter .filter-btn').forEach(b =>
-        b.classList.toggle('active', b.textContent === (type || 'Все типы')));
+        b.classList.toggle('active', b.textContent === (type || 'Все типы'))
+      );
       renderItems(cachedItems || []);
     }
 
+    // 4. Рендерим карточки товаров с учётом фильтров
     function renderItems(data) {
       const c = document.getElementById('items');
       c.innerHTML = '';
@@ -236,11 +261,10 @@
         if (currentGender && item['Категория'] !== currentGender) return;
         if (currentType && item['Подкатегория'] !== currentType) return;
         if ((item['В наличии']||'').toLowerCase() !== 'да') return;
-
         const div = document.createElement('div');
         div.className = 'item';
         div.innerHTML = `
-          <img src="${item['Фото (URL)']}">
+          <img src="${item['Фото (URL)']}" alt="${item.Название}">
           <div class="item-content">
             <div class="title">${item.Название}</div>
             <div class="price">${item.Цена} руб.</div>
@@ -256,6 +280,7 @@
       c.classList.remove('fade-out');
     }
 
+    // 5. Плавная смена содержимого + управление видимостью фильтров
     function switchContent(renderFn, showFilters = true) {
       const c = document.getElementById('items');
       c.classList.add('fade-out');
@@ -263,50 +288,30 @@
       document.getElementById('filters').classList.toggle('hidden', !showFilters);
     }
 
+    // 6. Загрузка каталога
     function loadShop() {
       document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
       fetchItems().then(renderItems);
       document.getElementById('filters').classList.remove('hidden');
     }
 
-    function showCart() {
-      document.getElementById('page-title').innerText = '🧺 Ваша корзина';
-      const c = document.getElementById('items');
-      const clearBtn = cart.length ? `<button id="clear-cart-btn" class="cart-btn"
-        style="background:#dc3545;margin:0 auto 16px;display:block;">Очистить корзину</button>` : '';
-      const itemsHtml = cart.length ? cart.map(i => `
-        <div class="item">
-          <img src="${i.img}">
-          <div class="item-content">
-            <div class="title">${i.name}</div>
-            <div class="price">${i.price} руб.</div>
-          </div>
-        </div>`).join('') : '<p style="padding:24px;text-align:center;">Корзина пуста.</p>';
-      c.innerHTML = clearBtn + itemsHtml;
-      document.getElementById('filters').classList.add('hidden');
-      if (cart.length) document.getElementById('clear-cart-btn').onclick = () => {
-        cart = []; localStorage.removeItem('cart'); showCart();
-      };
-    }
-
+    // 7. Показ избранного (пока статично)
     function showFavorites() {
       document.getElementById('page-title').innerText = '❤️ Избранное';
-      document.getElementById('items').innerHTML = '<p style="padding:24px;text-align:center;">Избранное пусто.</p>';
+      document.getElementById('items').innerHTML =
+        '<p style="padding:24px;text-align:center;">Избранное пусто.</p>';
       document.getElementById('filters').classList.add('hidden');
     }
 
+    // 8. Показ контактов (пока статично)
     function showContacts() {
       document.getElementById('page-title').innerText = '☎️ Контакты';
-      document.getElementById('items').innerHTML = '<p style="padding:24px;text-align:center;">Контакты скоро появятся.</p>';
+      document.getElementById('items').innerHTML =
+        '<p style="padding:24px;text-align:center;">Контакты скоро появятся.</p>';
       document.getElementById('filters').classList.add('hidden');
     }
 
-    function addToCart(name, price, img) {
-      cart.push({ name, price, img });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert(`Товар "${name}" добавлен в корзину!`);
-    }
-
+    // 9. Детали товара в модалке
     function showDetails(item) {
       currentItem = item;
       document.getElementById('modal-img').src = item['Фото (URL)'];
@@ -319,80 +324,18 @@
       document.getElementById('product-modal').classList.add('show');
     }
 
+    // 10. Закрытие модалки
     function hideModal() {
       document.getElementById('product-modal').classList.remove('show');
     }
 
-    // Навигация
-    document.addEventListener('DOMContentLoaded', () => {
-      showBanner();
-      loadShop();
-
-      // фильтр по полу
-      document.querySelectorAll('#gender-filter .filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentGender = btn.dataset.gender;
-          document.querySelectorAll('#gender-filter .filter-btn')
-            .forEach(b => b.classList.toggle('active', b === btn));
-          initTypeFilter(cachedItems || []);
-          renderItems(cachedItems || []);
-        });
-      });
-
-      // Навигация вкладок
-      document.getElementById('tab-shop').addEventListener('click', () => {
-        setActiveTab('tab-shop');
-        switchContent(loadShop, true);
-      });
-      document.getElementById('tab-cart').addEventListener('click', () => {
-        setActiveTab('tab-cart');
-        switchContent(showCart, false);
-      });
-      document.getElementById('tab-fav').addEventListener('click', () => {
-        setActiveTab('tab-fav');
-        switchContent(showFavorites, false);
-      });
-      document.getElementById('tab-contact').addEventListener('click', () => {
-        setActiveTab('tab-contact');
-        switchContent(showContacts, false);
-      });
-
-      // Модалка
-      document.querySelector('.modal-close').addEventListener('click', hideModal);
-      document.getElementById('product-modal').addEventListener('click', e => {
-        if (e.target.id === 'product-modal') hideModal();
-      });
-      document.getElementById('modal-add-btn').addEventListener('click', () => {
-        if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
-        hideModal();
-      });
-
-      // Свайп модалки
-      enableModalSwipe();
-    });
-
-    // Скрытие меню и заголовка при скролле вниз
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-      let nav = document.getElementById('navbar');
-      let title = document.getElementById('page-title');
-      if(window.scrollY > lastScrollY && window.scrollY > 50){
-        nav.classList.add('hidden');
-        title.classList.add('hidden');
-      } else {
-        nav.classList.remove('hidden');
-        title.classList.remove('hidden');
-      }
-      lastScrollY = window.scrollY;
-    });
-
-    // Подсветка активной вкладки
+    // 11. Навигация вкладок
     function setActiveTab(id) {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
 
-    // Свайп для модалки
+    // 12. Свайп вниз для закрытия модалки
     function enableModalSwipe() {
       let startY = 0;
       const mc = document.querySelector('.modal-content');
@@ -401,6 +344,68 @@
         if (e.changedTouches[0].clientY - startY > 100) hideModal();
       });
     }
+
+    // 13. Инициализация событий
+    document.addEventListener('DOMContentLoaded', () => {
+      showBanner();
+      loadShop();
+
+      // Фильтр по полу
+      document.querySelectorAll('#gender-filter .filter-btn').forEach(btn => {
+        btn.onclick = () => {
+          currentGender = btn.dataset.gender;
+          document.querySelectorAll('#gender-filter .filter-btn')
+            .forEach(b => b.classList.toggle('active', b === btn));
+          initTypeFilter(cachedItems || []);
+          renderItems(cachedItems || []);
+        };
+      });
+
+      // Вкладки
+      document.getElementById('tab-shop').onclick = () => {
+        setActiveTab('tab-shop');
+        switchContent(loadShop, true);
+      };
+      document.getElementById('tab-cart').onclick = () => {
+        setActiveTab('tab-cart');
+        switchContent(showCart, false);
+      };
+      document.getElementById('tab-fav').onclick = () => {
+        setActiveTab('tab-fav');
+        switchContent(showFavorites, false);
+      };
+      document.getElementById('tab-contact').onclick = () => {
+        setActiveTab('tab-contact');
+        switchContent(showContacts, false);
+      };
+
+      // Модалка
+      document.querySelector('.modal-close').onclick = hideModal;
+      document.getElementById('product-modal').onclick = e => {
+        if (e.target.id === 'product-modal') hideModal();
+      };
+      document.getElementById('modal-add-btn').onclick = () => {
+        addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
+        hideModal();
+      };
+
+      enableModalSwipe();
+    });
+
+    // 14. Скрытие меню и заголовка при скролле
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('navbar');
+      const title = document.getElementById('page-title');
+      if (window.scrollY > lastScrollY && window.scrollY > 50) {
+        nav.classList.add('hidden');
+        title.classList.add('hidden');
+      } else {
+        nav.classList.remove('hidden');
+        title.classList.remove('hidden');
+      }
+      lastScrollY = window.scrollY;
+    });
   </script>
 </body>
 </html>
