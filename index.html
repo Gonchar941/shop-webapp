@@ -762,19 +762,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
        enableModalSwipe();
       
-      document.querySelector('.gallery-prev').addEventListener('click', () => {
-        if (currentGalleryImages.length === 0) return;
-        currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-        updateGalleryImage();
-      });
+     document.querySelector('.gallery-prev').addEventListener('click', () => {
+  if (currentGalleryImages.length === 0) return;
+  currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+  updateGalleryImage();
+});
 
-            document.querySelector('.gallery-next').addEventListener('click', () => {
-        if (currentGalleryImages.length === 0) return;
-        currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
-        updateGalleryImage();
-      });
+document.querySelector('.gallery-next').addEventListener('click', () => {
+  if (currentGalleryImages.length === 0) return;
+  currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+  updateGalleryImage();
+});
 
-}); // ← вот этого сейчас не хватает
+}); // ← обязательно! Закрывает document.addEventListener
+
 </script>
+
 
 
