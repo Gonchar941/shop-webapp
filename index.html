@@ -409,100 +409,84 @@
   subNav.style.display = 'flex';
 }
 
-// Загрузка «Магазина»
-function loadShop() {
-  // 0) показываем главное меню
-  document.getElementById('category-menu').style.display = 'flex';
-  // 0.1) прячем подкатегории
-  document.getElementById('subcategory-menu').style.display = 'none';
+  <!-- … предыдущий HTML … -->
 
-  // 1) заголовок
-  document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
-  // 2) загрузка и рендер
-  fetchItems()
-    .then(renderItems)
-    .catch(() => {
-      document.getElementById('items').innerHTML =
-        '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
-      document.getElementById('items').classList.remove('fade-out');
-    });
-}
+  <script>
+    // Загрузка «Магазина»
+    function loadShop() {
+      // 0) показываем главное меню
+      document.getElementById('category-menu').style.display = 'flex';
+      // 0.1) прячем подкатегории
+      document.getElementById('subcategory-menu').style.display = 'none';
 
-// Показ «Корзины»
-function showCart() {
-  // Прячем меню категорий
-  document.getElementById('category-menu').style.display = 'none';
+      // 1) заголовок
+      document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
+      // 2) загрузка и рендер
+      fetchItems()
+        .then(renderItems)
+        .catch(() => {
+          document.getElementById('items').innerHTML =
+            '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
+          document.getElementById('items').classList.remove('fade-out');
+        });
+    }
 
-  // 1. Заголовок
-  document.getElementById('page-title').innerText = '🧺 Ваша корзина';
+    // Показ «Корзины»
+    function showCart() {
+      document.getElementById('category-menu').style.display = 'none';
+      document.getElementById('page-title').innerText = '🧺 Ваша корзина';
 
-  // 2. Контейнер
-  const c = document.getElementById('items');
-
-  // 3. Кнопка «Очистить корзину» только если...
-  const clearBtn = cart.length > 0
-    ? `
-      <button id="clear-cart-btn"
-              class="cart-btn"
-              style="background:#dc3545; margin: 0 auto 16px; display:block;">
-        Очистить корзину
-      </button>
-    `
-    : '';
-
-  // 4. Сами товары
-  const itemsHtml = cart.length === 0
-    ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
-    : cart.map(i => `
-        <div class="item">
-          <img src="${i.img}" alt="${i.name}">
-          <div class="item-content">
-            <div>
-              <div class="title">${i.name}</div>
-              <div class="price">${i.price} руб.</div>
+      const c = document.getElementById('items');
+      const clearBtn = cart.length > 0
+        ? `
+          <button id="clear-cart-btn" class="cart-btn"
+                  style="background:#dc3545; margin:0 auto 16px; display:block;">
+            Очистить корзину
+          </button>
+        `
+        : '';
+      const itemsHtml = cart.length === 0
+        ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
+        : cart.map(i => `
+            <div class="item">
+              <img src="${i.img}" alt="${i.name}">
+              <div class="item-content">
+                <div>
+                  <div class="title">${i.name}</div>
+                  <div class="price">${i.price} руб.</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      `).join('');
+          `).join('');
+      c.innerHTML = clearBtn + itemsHtml;
+      c.classList.remove('fade-out');
 
-  // 5. Вставляем и удаляем fade
-  c.innerHTML = clearBtn + itemsHtml;
-  c.classList.remove('fade-out');
+      if (cart.length > 0) {
+        document.getElementById('clear-cart-btn').addEventListener('click', () => {
+          cart = [];
+          localStorage.removeItem('cart');
+          showCart();
+        });
+      }
+    }
 
-  // 6. Обработчик кнопки «Очистить корзину»
-  if (cart.length > 0) {
-    document.getElementById('clear-cart-btn').addEventListener('click', () => {
-      cart = [];
-      localStorage.removeItem('cart');
-      showCart();
-    });
-  }
-}
+    // Показ «Избранного»
+    function showFavorites() {
+      document.getElementById('category-menu').style.display = 'none';
+      document.getElementById('page-title').innerText = '❤️ Избранное';
+      document.getElementById('items').innerHTML =
+        '<p style="padding:24px; text-align:center;">Здесь будут ваши избранные товары.</p>';
+      document.getElementById('items').classList.remove('fade-out');
+    }
 
-// Показ «Избранного»
-function showFavorites() {
-  // Прячем меню категорий
-  document.getElementById('category-menu').style.display = 'none';
-
-  // Заголовок и плейсхолдер
-  document.getElementById('page-title').innerText = '❤️ Избранное';
-  document.getElementById('items').innerHTML =
-    '<p style="padding:24px; text-align:center;">Здесь будут ваши избранные товары.</p>';
-  document.getElementById('items').classList.remove('fade-out');
-}
-
-// Показ «Контактов»
-function showContacts() {
-  // Прячем меню категорий
-  document.getElementById('category-menu').style.display = 'none';
-
-  // Заголовок и плейсхолдер
-  document.getElementById('page-title').innerText = '☎️ Контакты';
-  document.getElementById('items').innerHTML =
-    '<p style="padding:24px; text-align:center;">Контактная информация появится здесь.</p>';
-  document.getElementById('items').classList.remove('fade-out');
-}
-
+    // Показ «Контактов»
+    function showContacts() {
+      document.getElementById('category-menu').style.display = 'none';
+      document.getElementById('page-title').innerText = '☎️ Контакты';
+      document.getElementById('items').innerHTML =
+        '<p style="padding:24px; text-align:center;">Контактная информация появится здесь.</p>';
+      document.getElementById('items').classList.remove('fade-out');
+    }
 
     // Заполнение модалки
     function showDetails(item) {
@@ -532,7 +516,7 @@ function showContacts() {
       });
     }
 
-        // Подсветка вкладки
+    // Подсветка вкладки
     function setActiveTab(id) {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -540,9 +524,7 @@ function showContacts() {
 
     // Инициализация событий после загрузки DOM
     document.addEventListener('DOMContentLoaded', () => {
-      // Показываем баннер
       showBanner();
-      // Загружаем магазин по умолчанию
       loadShop();
 
       // Обработчик для кнопок категорий
@@ -553,8 +535,9 @@ function showContacts() {
           const cat = btn.dataset.cat;
           renderSubcategories(cat);
           switchContent(() => {
-            if (cat === 'Все') renderItems(cachedItems);
-            else {
+            if (cat === 'Все') {
+              renderItems(cachedItems);
+            } else {
               const filtered = cachedItems.filter(item => item['Категория'] === cat);
               renderItems(filtered);
             }
@@ -564,16 +547,20 @@ function showContacts() {
 
       // Навигация табов
       document.getElementById('tab-shop').addEventListener('click', () => {
-        setActiveTab('tab-shop'); switchContent(loadShop);
+        setActiveTab('tab-shop');
+        switchContent(loadShop);
       });
-      document.getElementById('tab-cart').addEventListener('click', () => {
-        setActiveTab('tab-cart'); switchContent(showCart);
+      document.getElementById('tab-cart').addEventListener(' click', () => {
+        setActiveTab('tab-cart');
+        switchContent(showCart);
       });
       document.getElementById('tab-fav').addEventListener('click', () => {
-        setActiveTab('tab-fav'); switchContent(showFavorites);
+        setActiveTab('tab-fav');
+        switchContent(showFavorites);
       });
       document.getElementById('tab-contact').addEventListener('click', () => {
-        setActiveTab('tab-contact'); switchContent(showContacts);
+        setActiveTab('tab-contact');
+        switchContent(showContacts);
       });
 
       // Закрытие модалки
@@ -584,13 +571,15 @@ function showContacts() {
 
       // Добавить в корзину из модалки
       document.getElementById('modal-add-btn').addEventListener('click', () => {
-        if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
+        if (currentItem) {
+          addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
+        }
         hideModal();
       });
 
-      // Свайп для модалки
       enableModalSwipe();
     });
   </script>
 </body>
 </html>
+
