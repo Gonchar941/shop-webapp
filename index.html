@@ -439,37 +439,62 @@
   }
 
   function showCart() {
-    document.getElementById('category-menu').style.display = 'none';
-    document.getElementById('page-title').innerText = '🧺 Ваша корзина';
-    const c = document.getElementById('items');
-    const clearBtn = cart.length > 0
-      ? `<button id="clear-cart-btn" class="cart-btn" style="background:#dc3545;margin:0 auto 16px;display:block;">
-           Очистить корзину
-         </button>`
-      : '';
-    const itemsHtml = cart.length === 0
-      ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
-      : cart.map(i => `
-          <div class="item">
-            <img src="${i.img}" alt="${i.name}">
-            <div class="item-content">
-              <div>
-                <div class="title">${i.name}</div>
-                <div class="price">${i.price} руб.</div>
-              </div>
+  // Прячем меню категорий и подменю
+  document.getElementById('category-menu').style.display = 'none';
+  document.getElementById('subcategory-menu').style.display = 'none';
+
+  // Заголовок
+  document.getElementById('page-title').innerText = '🧺 Ваша корзина';
+
+  // Контейнер и кнопка "Очистить"
+  const c = document.getElementById('items');
+  const clearBtn = cart.length > 0
+    ? `<button id="clear-cart-btn" class="cart-btn" style="background:#dc3545;margin:0 auto 16px;display:block;">
+         Очистить корзину
+       </button>`
+    : '';
+
+  // HTML карточек из корзины
+  const itemsHtml = cart.length === 0
+    ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
+    : cart.map(i => `
+        <div class="item">
+          <img src="${i.img}" alt="${i.name}">
+          <div class="item-content">
+            <div>
+              <div class="title">${i.name}</div>
+              <div class="price">${i.price} руб.</div>
             </div>
           </div>
-        `).join('');
-    c.innerHTML = clearBtn + itemsHtml;
-    c.classList.remove('fade-out');
-    if (cart.length > 0) {
-      document.getElementById('clear-cart-btn').addEventListener('click', () => {
-        cart = [];
-        localStorage.removeItem('cart');
-        showCart();
+        </div>
+      `).join('');
+
+  // Вставляем и показываем
+  c.innerHTML = clearBtn + itemsHtml;
+  c.classList.remove('fade-out');
+
+  // Обработчик "Очистить корзину"
+  if (cart.length > 0) {
+    document.getElementById('clear-cart-btn').addEventListener('click', () => {
+      cart = [];
+      localStorage.removeItem('cart');
+      showCart();
+    });
+
+    // ← ДОБАВЛЕНО: клики по товарам в корзине
+    c.querySelectorAll('.item').forEach((el, idx) => {
+      el.addEventListener('click', () => {
+        // Находим полный объект товара по названию
+        const name = cart[idx].name;
+        const fullItem = cachedItems.find(it => it.Название === name);
+        if (fullItem) {
+          showDetails(fullItem);
+        }
       });
-    }
+    });
   }
+}
+
 
   function showFavorites() {
     document.getElementById('category-menu').style.display = 'none';
