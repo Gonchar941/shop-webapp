@@ -408,35 +408,22 @@ body.dark .nav-item.active {
 <body>
 
   <!-- Экран выбора темы -->
-<div id="theme-selection" style="display: flex; justify-content: center; padding: 60px 20px;">
-  <div style="background: #f5f5f5; border-radius: 24px; padding: 40px 30px; max-width: 500px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.05); text-align: center;">
-    <img src="theme-selection.png" alt="Выбор темы" style="width: 100%; border-radius: 20px; max-width: 100%;">
-    <div style="display: flex; gap: 12px; margin-top: -85px;">
-      <button class="select-theme" data-theme="dark" style="
-        flex: 1;
-        padding: 14px;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 16px;
-        border: none;
-        background: white;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        cursor: pointer;
-      ">Темная тема</button>
-      <button class="select-theme" data-theme="light" style="
-        flex: 1;
-        padding: 14px;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 16px;
-        border: none;
-        background: white;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        cursor: pointer;
-      ">Светлая тема</button>
-    </div>
+<div id="theme-selection" style="text-align: center; padding: 40px;">
+  <img src="theme-selection.png" alt="Выбор темы" style="max-width: 100%; width: 720px; border-radius: 20px; box-shadow: 0 0 24px rgba(0,0,0,0.08);">
+  <div style="display: flex; justify-content: center; gap: 28px; margin-top: -24px;">
+    <button class="select-theme"
+            data-theme="dark"
+            style="padding: 18px 32px; font-size: 20px; font-weight: bold; border-radius: 16px; border: none; background: #222; color: white;">
+      Темная тема
+    </button>
+    <button class="select-theme"
+            data-theme="light"
+            style="padding: 18px 32px; font-size: 20px; font-weight: bold; border-radius: 16px; border: none; background: #f1f1f1; color: #111;">
+      Светлая тема
+    </button>
   </div>
 </div>
+
 
   <!-- Баннер -->
   <div id="expand-banner">Разверните приложение на весь экран</div>
