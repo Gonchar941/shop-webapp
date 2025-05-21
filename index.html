@@ -768,14 +768,13 @@ window.addEventListener('DOMContentLoaded', () => {
         updateGalleryImage();
       });
 
-      document.querySelector('.gallery-next').addEventListener('click', () => {
+            document.querySelector('.gallery-next').addEventListener('click', () => {
         if (currentGalleryImages.length === 0) return;
         currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
         updateGalleryImage();
       });
 
+}); // ← вот этого сейчас не хватает
+</script>
 
-}); // ← добавлено!
-
-</script> <!-- ← убедись, что есть -->
 
