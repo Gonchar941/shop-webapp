@@ -246,6 +246,20 @@
       font-weight: 600;
       color: #0d6efd;
     }
+    #subcategory-menu .subcat-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  margin: 0 3px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #555;
+    }
+    #subcategory-menu .subcat-btn.active {
+  border-bottom: 2px solid #0d6efd;
+  font-weight: 600;
+  color: #0d6efd;
+    }
   </style>
 </head>
 <body>
@@ -256,12 +270,17 @@
   <!-- Заголовок -->
   <div id="page-title">🛍 Магазин TERRIKON</div>
     <!-- Меню категорий -->
-  <nav id="category-menu" style="text-align:center; padding:8px 0; background:#fff;">
-    <button data-cat="Все" class="cat-btn active">Все</button>
-    <button data-cat="Мужская" class="cat-btn">Мужская</button>
-    <button data-cat="Женская" class="cat-btn">Женская</button>
-    <button data-cat="Детская" class="cat-btn">Детская</button>
-  </nav>
+<nav id="category-menu" style="text-align:center; padding:8px 0; background:#fff;">
+  <button data-cat="Все"   class="cat-btn active">Все</button>
+  <button data-cat="Мужская" class="cat-btn">Мужская</button>
+  <button data-cat="Женская" class="cat-btn">Женская</button>
+  <button data-cat="Детская" class="cat-btn">Детская</button>
+</nav>
+
+<!-- Меню подкатегорий -->
+<nav id="subcategory-menu" style="display:none; text-align:center; padding:8px 0; background:#fff;">
+  <!-- Кнопки будут рендериться скриптом -->
+</nav>
 
   <!-- Контейнер для товаров -->
   <div class="container" id="items"></div>
@@ -306,6 +325,11 @@
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     let cachedItems = null;
     let currentItem = null;
+    const subcategories = {
+  'Мужская': ['Футболки', 'Рубашки', 'Джинсы'],
+  'Женская': ['Платья', 'Блузки', 'Юбки']
+};
+
 
     // Показ баннера с анимацией
     function showBanner() {
@@ -356,9 +380,53 @@
       c.classList.add('fade-out');
       setTimeout(() => { renderFn(); }, 150);
     }
+    function renderSubcategories(cat) {
+  const subNav = document.getElementById('subcategory-menu');
+  subNav.innerHTML = '';  // очищаем
+  const list = subcategories[cat] || [];
+  if (list.length === 0) {
+    subNav.style.display = 'none';
+    return;
+  }
+  list.forEach(name => {
+    const btn = document.createElement('button');
+    btn.innerText = name;
+    btn.className = 'subcat-btn';
+    btn.addEventListener('click', () => {
+      // снимаем active у всех
+      subNav.querySelectorAll('.subcat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // показываем только этот подтип
+      switchContent(() => {
+        const filtered = cachedItems
+          .filter(item => item['Категория'] === cat && (item['Тип'] || '') === name);
+        renderItems(filtered);
+      });
+    });
+    subNav.appendChild(btn);
+  });
+  // показываем панель
+  subNav.style.display = 'flex';
+}
 
 // Загрузка «Магазина»
 function loadShop() {
+  // 0) показываем главное меню
+  document.getElementById('category-menu').style.display = 'flex';
+  // 0.1) прячем подкатегории
+  document.getElementById('subcategory-menu').style.display = 'none';
+
+  // 1) заголовок
+  document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
+  // 2) загрузка и рендер
+  fetchItems()
+    .then(renderItems)
+    .catch(() => {
+      document.getElementById('items').innerHTML =
+        '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
+      document.getElementById('items').classList.remove('fade-out');
+    });
+}
   // Показываем меню категорий
   document.getElementById('category-menu').style.display = 'flex';
 
@@ -484,47 +552,74 @@ function showContacts() {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-    // Инициализация событий после загрузки DOM
-    document.addEventListener('DOMContentLoaded', () => {
-      // Показываем баннер
-      showBanner();
-      // Загружаем магазин по умолчанию
-      loadShop();
+    <script>
+  // … все твои функции выше …
 
-      // Навигация с анимацией и подсветкой
-      document.getElementById('tab-shop').addEventListener('click', () => {
-        setActiveTab('tab-shop');
-        switchContent(loadShop);
-      });
-      document.getElementById('tab-cart').addEventListener('click', () => {
-        setActiveTab('tab-cart');
-        switchContent(showCart);
-      });
-      document.getElementById('tab-fav').addEventListener('click', () => {
-        setActiveTab('tab-fav');
-        switchContent(showFavorites);
-      });
-      document.getElementById('tab-contact').addEventListener('click', () => {
-        setActiveTab('tab-contact');
-        switchContent(showContacts);
-      });
+  // Инициализация событий после загрузки DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    // Показываем баннер
+    showBanner();
+    // Загружаем магазин по умолчанию
+    loadShop();
 
-      // Закрытие модалки по крестику и клику вне контента
-      document.querySelector('.modal-close').addEventListener('click', hideModal);
-      document.getElementById('product-modal').addEventListener('click', e => {
-        if (e.target.id === 'product-modal') hideModal();
-      });
+    // ——— Обработчик клика по основным категориям ———
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // 1) Сбрасываем актив и подсвечиваем текущую
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-      // Добавить в корзину из модалки
-      document.getElementById('modal-add-btn').addEventListener('click', () => {
-        if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
-        hideModal();
-      });
+        // 2) Выбранная категория
+        const cat = btn.dataset.cat;
 
-      // Включаем свайп для закрытия модалки
-      enableModalSwipe();
+        // 3) Рендерим подкатегории (скроет, если 'Все', покажет, если есть данные)
+        renderSubcategories(cat);
+
+        // 4) Фильтруем и показываем товары
+        switchContent(() => {
+          if (cat === 'Все') {
+            renderItems(cachedItems);
+          } else {
+            const filtered = cachedItems.filter(item =>
+              (item['Категория'] || '') === cat
+            );
+            renderItems(filtered);
+          }
+        });
+      });
     });
-  </script>
 
-</body>
-</html>
+    // Навигация с анимацией и подсветкой табов
+    document.getElementById('tab-shop').addEventListener('click', () => {
+      setActiveTab('tab-shop');
+      switchContent(loadShop);
+    });
+    document.getElementById('tab-cart').addEventListener('click', () => {
+      setActiveTab('tab-cart');
+      switchContent(showCart);
+    });
+    document.getElementById('tab-fav').addEventListener('click', () => {
+      setActiveTab('tab-fav');
+      switchContent(showFavorites);
+    });
+    document.getElementById('tab-contact').addEventListener('click', () => {
+      setActiveTab('tab-contact');
+      switchContent(showContacts);
+    });
+
+    // Закрытие модалки по крестику и клику вне контента
+    document.querySelector('.modal-close').addEventListener('click', hideModal);
+    document.getElementById('product-modal').addEventListener('click', e => {
+      if (e.target.id === 'product-modal') hideModal();
+    });
+
+    // Добавить в корзину из модалки
+    document.getElementById('modal-add-btn').addEventListener('click', () => {
+      if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
+      hideModal();
+    });
+
+    // Включаем свайп для закрытия модалки
+    enableModalSwipe();
+  });
+</script>
