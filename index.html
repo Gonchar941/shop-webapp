@@ -58,6 +58,7 @@
       z-index: 10;
     }
 
+
     /* Контейнер товаров — адаптивный flex */
     .container {
       display: flex;
@@ -295,6 +296,32 @@
     .modal-content p strong {
       color: #222;
     }
+body.dark {
+  background: #1e1e1e;
+  color: #eee;
+}
+body.dark #page-title,
+body.dark #category-menu,
+body.dark #subcategory-menu,
+body.dark .navbar,
+body.dark .modal-content {
+  background: #2c2c2c;
+  color: #eee;
+}
+body.dark .item {
+  background: #2c2c2c;
+  color: #eee;
+  box-shadow: 0 6px 18px rgba(255,255,255,0.05);
+}
+body.dark .item:hover {
+  box-shadow: 0 10px 24px rgba(255,255,255,0.1);
+}
+body.dark .cart-btn {
+  background: #0a58ca;
+}
+body.dark .cart-btn:hover {
+  background: #084298;
+}
   </style>
 </head>
 <body>
@@ -304,6 +331,10 @@
 
   <!-- Заголовок -->
   <div id="page-title">🛍 Магазин TERRIKОН</div>
+  <!-- Кнопка переключения темы -->
+<div style="text-align:center; margin-top: -20px;">
+  <button id="theme-toggle" class="cart-btn" style="margin-top: 8px;">🌙 Темная тема</button>
+</div>
 
   <!-- Главное меню категорий -->
   <nav id="category-menu">
@@ -477,6 +508,19 @@
              Очистить корзину
            </button>`
         : '';
+    function applyTheme() {
+  const theme = localStorage.getItem('theme') || 'light';
+  document.body.classList.toggle('dark', theme === 'dark');
+  document.getElementById('theme-toggle').innerText = theme === 'dark' ? '☀️ Светлая тема' : '🌙 Темная тема';
+}
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('theme-toggle').innerText = isDark ? '☀️ Светлая тема' : '🌙 Темная тема';
+});
+
+applyTheme();
 
       const itemsHtml = cart.length === 0
         ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
