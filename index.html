@@ -321,7 +321,36 @@ body.dark .cart-btn {
 }
 body.dark .cart-btn:hover {
   background: #084298;
+/* --- Улучшение читаемости текста в темной теме --- */
+body.dark .title,
+body.dark .price,
+body.dark .status,
+body.dark .status::before,
+body.dark .modal-content p,
+body.dark .modal-content p strong,
+body.dark .cat-btn,
+body.dark .subcat-btn,
+body.dark .nav-item,
+body.dark #page-title,
+body.dark .modal-close {
+  color: #f1f1f1;
 }
+
+body.dark .status {
+  color: #28df99;
+}
+body.dark .status::before {
+  content: "✅";
+  color: #28df99;
+}
+
+body.dark .cat-btn.active,
+body.dark .subcat-btn.active,
+body.dark .nav-item.active {
+  color: #0d99ff;
+  border-color: #0d99ff;
+}
+
   </style>
 </head>
 <body>
