@@ -456,32 +456,7 @@ body.dark .nav-item.active {
 function selectTheme(mode) {
   localStorage.setItem('theme', mode);
   document.body.classList.toggle('dark', mode === 'dark');
-  document.getElementById('theme-selection-screen').style.display = 'none';
   loadShop(); // Показать магазин после выбора темы
-}
-
-const modal = document.getElementById('theme-choice-modal');
-const options = document.querySelectorAll('.theme-option');
-
-// Проверяем: уже выбрана тема?
-if (localStorage.getItem('theme')) {
-  modal.remove(); // Убираем окно
-  // Применяем тему
-  if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark');
-  }
-} else {
-  // Выбор темы
-  options.forEach(opt => {
-    opt.addEventListener('click', () => {
-      const theme = opt.dataset.theme;
-      localStorage.setItem('theme', theme); // Запоминаем
-      if (theme === 'dark') {
-        document.body.classList.add('dark');
-      }
-      modal.remove(); // Убираем окно
-    });
-  });
 }
 
 // переключение темы — ставим как можно раньше
@@ -823,7 +798,7 @@ document.querySelector('.gallery-next').addEventListener('click', () => {
   updateGalleryImage();
 });
 
-// Сначала скроем магазин
+  // Скрываем магазин до выбора темы
   document.getElementById('category-menu').style.display = 'none';
   document.querySelector('.navbar').style.display = 'none';
   document.getElementById('items').style.display = 'none';
@@ -831,6 +806,7 @@ document.querySelector('.gallery-next').addEventListener('click', () => {
   document.getElementById('expand-banner').style.display = 'none';
   document.getElementById('subcategory-menu').style.display = 'none';
 
+  // Ждём нажатие на кнопку выбора темы
   document.querySelectorAll('.select-theme').forEach(btn => {
     btn.addEventListener('click', () => {
       const selectedTheme = btn.dataset.theme;
@@ -838,8 +814,9 @@ document.querySelector('.gallery-next').addEventListener('click', () => {
       document.body.classList.toggle('dark', selectedTheme === 'dark');
 
       const themeSelection = document.getElementById('theme-selection');
-      if (themeSelection) themeSelection.remove();
+      if (themeSelection) themeSelection.remove(); // ← безопасно
 
+      // Показываем магазин
       document.getElementById('category-menu').style.display = 'flex';
       document.querySelector('.navbar').style.display = 'flex';
       document.getElementById('items').style.display = '';
@@ -847,10 +824,7 @@ document.querySelector('.gallery-next').addEventListener('click', () => {
       document.getElementById('expand-banner').style.display = '';
     });
   });
-
-  // остальной твой код...
 });
- 
 </script>
 </body>
 </html>
