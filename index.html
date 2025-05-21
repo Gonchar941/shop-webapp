@@ -357,88 +357,99 @@
       setTimeout(() => { renderFn(); }, 150);
     }
 
-    // Загрузка «Магазина»
-    function loadShop() {
-      document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
-      fetchItems()
-        .then(renderItems)
-        .catch(() => {
-          document.getElementById('items').innerHTML =
-            '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
-        });
-    }
+// Загрузка «Магазина»
+function loadShop() {
+  // Показываем меню категорий
+  document.getElementById('category-menu').style.display = 'flex';
 
-    // Показ «Корзины»
-    function showCart() {
-    // 1. Заголовок
-    document.getElementById('page-title').innerText = '🧺 Ваша корзина';
+  // Обновляем заголовок
+  document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
 
-    // 2. Контейнер
-    const c = document.getElementById('items');
+  // Загружаем и рендерим товары
+  fetchItems()
+    .then(renderItems)
+    .catch(() => {
+      document.getElementById('items').innerHTML =
+        '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
+      document.getElementById('items').classList.remove('fade-out');
+    });
+}
 
-    // 3. Кнопка «Очистить корзину» только если...
-    const clearBtn = cart.length > 0
-      ? `
-        <button id="clear-cart-btn"
-                class="cart-btn"
-                style="background:#dc3545; margin: 0 auto 16px; display:block;">
-          Очистить корзину
-        </button>
-      `
-      : '';
+// Показ «Корзины»
+function showCart() {
+  // Прячем меню категорий
+  document.getElementById('category-menu').style.display = 'none';
 
-// Новый вариант с изображением:
-const itemsHtml = cart.length === 0
-  ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
-  : cart.map(i => `
-      <div class="item">
-        <!-- Картинка появится так же, как в каталоге -->
-        <img src="${i.img}" alt="${i.name}">
-        <div class="item-content">
-          <div>
-            <div class="title">${i.name}</div>
-            <div class="price">${i.price} руб.</div>
+  // 1. Заголовок
+  document.getElementById('page-title').innerText = '🧺 Ваша корзина';
+
+  // 2. Контейнер
+  const c = document.getElementById('items');
+
+  // 3. Кнопка «Очистить корзину» только если...
+  const clearBtn = cart.length > 0
+    ? `
+      <button id="clear-cart-btn"
+              class="cart-btn"
+              style="background:#dc3545; margin: 0 auto 16px; display:block;">
+        Очистить корзину
+      </button>
+    `
+    : '';
+
+  // 4. Сами товары
+  const itemsHtml = cart.length === 0
+    ? '<p style="padding:24px; text-align:center;">Корзина пуста.</p>'
+    : cart.map(i => `
+        <div class="item">
+          <img src="${i.img}" alt="${i.name}">
+          <div class="item-content">
+            <div>
+              <div class="title">${i.name}</div>
+              <div class="price">${i.price} руб.</div>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `).join('');
 
-    // 5. Вставка и убираем fade
-    c.innerHTML = clearBtn + itemsHtml;
-    c.classList.remove('fade-out');
+  // 5. Вставляем и удаляем fade
+  c.innerHTML = clearBtn + itemsHtml;
+  c.classList.remove('fade-out');
 
-    // 6. Обработчик очистки
-    if (cart.length > 0) {
-      document.getElementById('clear-cart-btn').addEventListener('click', () => {
-        cart = [];
-        localStorage.removeItem('cart');
-        showCart();
-      });
-    }
-    }
+  // 6. Обработчик кнопки «Очистить корзину»
+  if (cart.length > 0) {
+    document.getElementById('clear-cart-btn').addEventListener('click', () => {
+      cart = [];
+      localStorage.removeItem('cart');
+      showCart();
+    });
+  }
+}
 
-    // Показ «Избранного»
-    function showFavorites() {
-      document.getElementById('page-title').innerText = '❤️ Избранное';
-      document.getElementById('items').innerHTML =
-        '<p style="padding:24px; text-align:center;">Здесь будут ваши избранные товары.</p>';
-      document.getElementById('items').classList.remove('fade-out');
-    }
+// Показ «Избранного»
+function showFavorites() {
+  // Прячем меню категорий
+  document.getElementById('category-menu').style.display = 'none';
 
-    // Показ «Контактов»
-    function showContacts() {
-      document.getElementById('page-title').innerText = '☎️ Контакты';
-      document.getElementById('items').innerHTML =
-        '<p style="padding:24px; text-align:center;">Контактная информация появится здесь.</p>';
-      document.getElementById('items').classList.remove('fade-out');
-    }
+  // Заголовок и плейсхолдер
+  document.getElementById('page-title').innerText = '❤️ Избранное';
+  document.getElementById('items').innerHTML =
+    '<p style="padding:24px; text-align:center;">Здесь будут ваши избранные товары.</p>';
+  document.getElementById('items').classList.remove('fade-out');
+}
 
-    // Добавить в корзину
-    function addToCart(name, price, img) {
-      cart.push({ name, price, img });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert(`Товар "${name}" добавлен в корзину!`);
-    }
+// Показ «Контактов»
+function showContacts() {
+  // Прячем меню категорий
+  document.getElementById('category-menu').style.display = 'none';
+
+  // Заголовок и плейсхолдер
+  document.getElementById('page-title').innerText = '☎️ Контакты';
+  document.getElementById('items').innerHTML =
+    '<p style="padding:24px; text-align:center;">Контактная информация появится здесь.</p>';
+  document.getElementById('items').classList.remove('fade-out');
+}
+
 
     // Заполнение модалки
     function showDetails(item) {
