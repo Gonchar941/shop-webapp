@@ -557,13 +557,52 @@
     }
 
     function enableModalSwipe() {
-      let startY = 0;
-      const mc = document.querySelector('.modal-content');
-      mc.addEventListener('touchstart', e => startY = e.changedTouches[0].clientY);
-      mc.addEventListener('touchend', e => {
-        if (e.changedTouches[0].clientY - startY > 100) hideModal();
-      });
+  let startX = 0;
+  let endX = 0;
+  const img = document.getElementById('modal-img');
+
+  img.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+
+  img.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+
+  img.addEventListener('touchend', e => {
+    endX = e.changedTouches[0].clientX;
+    const deltaX = endX - startX;
+
+    if (Math.abs(deltaX) > 50) {
+      // Направление свайпа
+      const direction = deltaX > 0 ? 'right' : 'left';
+
+      // Анимация ухода
+      img.style.transform = `translateX(${direction === 'left' ? '-' : ''}100%)`;
+      img.style.opacity = '0';
+
+      setTimeout(() => {
+        if (direction === 'left') {
+          currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+        } else {
+          currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+        }
+
+        updateGalleryImage();
+
+        // Плавный возврат
+        img.style.transform = `translateX(${direction === 'left' ? '100%' : '-100%'})`;
+        setTimeout(() => {
+          img.style.transition = 'none';
+          img.style.transform = 'translateX(0)';
+          img.style.opacity = '1';
+          // Восстановление transition
+          setTimeout(() => {
+            img.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+          }, 30);
+        }, 30);
+      }, 250);
     }
+  });
+}
 
     function setActiveTab(id) {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
