@@ -408,22 +408,22 @@ body.dark .nav-item.active {
 <body>
 
   <!-- Экран выбора темы -->
-<div id="theme-selection" style="text-align:center; padding: 40px;">
+<div id="theme-selection" style="display: flex; flex-direction: column; align-items: center; padding: 40px;">
   <!-- Увеличенное изображение -->
   <img src="theme-selection.png"
        alt="Выбор темы"
-       style="width: 860px; max-width: 100%; border-radius: 24px; box-shadow: 0 0 32px rgba(0,0,0,0.08); margin-bottom: 16px;">
+       style="width: 920px; max-width: 100%; border-radius: 20px; box-shadow: 0 0 32px rgba(0,0,0,0.1); margin-bottom: 24px;">
 
-  <!-- Кнопки в одной строке -->
-  <div style="display: flex; justify-content: center; gap: 32px;">
+  <!-- Кнопки в линию -->
+  <div style="display: flex; justify-content: center; gap: 40px;">
     <button class="select-theme"
             data-theme="dark"
-            style="padding: 20px 36px; font-size: 20px; font-weight: bold; border-radius: 16px; border: none; background: #222; color: white;">
+            style="padding: 18px 36px; font-size: 20px; border-radius: 14px; border: none; background: #222; color: white;">
       Темная тема
     </button>
     <button class="select-theme"
             data-theme="light"
-            style="padding: 20px 36px; font-size: 20px; font-weight: bold; border-radius: 16px; border: none; background: #f1f1f1; color: #111;">
+            style="padding: 18px 36px; font-size: 20px; border-radius: 14px; border: none; background: #f1f1f1; color: #111;">
       Светлая тема
     </button>
   </div>
