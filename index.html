@@ -141,7 +141,29 @@
       transition: background 0.3s ease;
       margin-top: auto;
     }
-    .cart-btn:hover { background: #0b5ed7; }
+        .cart-btn:hover { background: #0b5ed7; }
+
+    .modal-gallery {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-gallery button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.9);
+      border: none;
+      font-size: 24px;
+      padding: 8px 12px;
+      cursor: pointer;
+      z-index: 5;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .gallery-prev { left: 0; }
+    .gallery-next { right: 0; }
 
     /* Главное меню категорий */
     #category-menu {
@@ -313,10 +335,26 @@
   </div>
 
   <!-- Модальное окно -->
-  <div id="product-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-close">&times;</div>
+<div id="product-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-close">&times;</div>
+    
+    <div class="modal-gallery">
+      <button class="gallery-prev">&lt;</button>
       <img id="modal-img" src="" alt="Фото товара">
+      <button class="gallery-next">&gt;</button>
+    </div>
+    
+    <h2 id="modal-title"></h2>
+    <p class="price" id="modal-price"></p>
+    <p class="status" id="modal-status"></p>
+    <p><strong>Категория:</strong> <span id="modal-category"></span></p>
+    <p><strong>Размеры:</strong> <span id="modal-sizes"></span></p>
+    <p><strong>Описание:</strong> <span id="modal-desc"></span></p>
+    <button class="cart-btn" id="modal-add-btn">Добавить в корзину</button>
+  </div>
+</div>
+
       <h2 id="modal-title"></h2>
       <p class="price" id="modal-price"></p>
       <p class="status" id="modal-status"></p>
@@ -335,6 +373,8 @@
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     let cachedItems = null;
     let currentItem = null;
+    let currentGalleryIndex = 0;
+    let currentGalleryImages = [];
 
     const subcategories = {
       'Мужская': ['Футболки', 'Рубашки', 'Джинсы'],
@@ -497,17 +537,29 @@
       c.classList.remove('fade-out');
     }
 
+    function updateGalleryImage() {
+  const img = document.getElementById('modal-img');
+  if (currentGalleryImages.length === 0) return;
+  img.src = currentGalleryImages[currentGalleryIndex];
+}
+
+
     function showDetails(item) {
-      currentItem = item;
-      document.getElementById('modal-img').src = item['Фото (URL)'];
-      document.getElementById('modal-title').innerText = item.Название;
-      document.getElementById('modal-price').innerText = item.Цена + ' руб.';
-      document.getElementById('modal-status').innerText = 'В наличии';
-      document.getElementById('modal-category').innerText = item['Категория'] || '-';
-      document.getElementById('modal-sizes').innerText = item['Размеры'] || '-';
-      document.getElementById('modal-desc').innerText = item['Описание (опц.)'] || '-';
-      document.getElementById('product-modal').classList.add('show');
-    }
+  currentItem = item;
+  const main = item['Фото (URL)'];
+  const extra = item['Доп. фото'] || '';
+  currentGalleryImages = [main, ...extra.split(',').map(s => s.trim()).filter(Boolean)];
+  currentGalleryIndex = 0;
+  updateGalleryImage();
+
+  document.getElementById('modal-title').innerText = item.Название;
+  document.getElementById('modal-price').innerText = item.Цена + ' руб.';
+  document.getElementById('modal-status').innerText = 'В наличии';
+  document.getElementById('modal-category').innerText = item['Категория'] || '-';
+  document.getElementById('modal-sizes').innerText = item['Размеры'] || '-';
+  document.getElementById('modal-desc').innerText = item['Описание (опц.)'] || '-';
+  document.getElementById('product-modal').classList.add('show');
+}
 
     function hideModal() {
       document.getElementById('product-modal').classList.remove('show');
@@ -582,5 +634,17 @@
       });
 
       enableModalSwipe();
-    });
+      document.querySelector('.gallery-prev').addEventListener('click', () => {
+        if (currentGalleryImages.length === 0) return;
+        currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+        updateGalleryImage();
+      });
+
+      document.querySelector('.gallery-next').addEventListener('click', () => {
+   if (currentGalleryImages.length === 0) return;
+   currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+   updateGalleryImage();
+
+}); // ← этой закрывающей `});` не было
+
   </script>
