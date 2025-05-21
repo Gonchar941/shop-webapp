@@ -356,6 +356,15 @@
   }
 
   function renderItems(data) {
++  if (!Array.isArray(data)) {
++    console.error('renderItems: ожидаем массив, получили', data);  // ← ЗДЕСЬ ДОБАВИТЬ
++    return;
++  }
+  const c = document.getElementById('items');
+  c.innerHTML = '';
+  // …далее код без изменений…
+}
+
     const c = document.getElementById('items');
     c.innerHTML = '';
     data.forEach(item => {
@@ -524,12 +533,21 @@
         btn.classList.add('active');
         const cat = btn.dataset.cat;
         renderSubcategories(cat);
-        switchContent(() => {
-          if (cat === 'Все') renderItems(cachedItems);
-          else {
-            const filtered = cachedItems.filter(i => i['Категория'] === cat);
-            renderItems(filtered);
-          }
+            switchContent(() => {
+-     if (cat === 'Все') {
+-       renderItems(cachedItems);
+-     } else {
+-       const filtered = cachedItems.filter(i => i['Категория'] === cat);
+-       renderItems(filtered);
+-     }
++     if (cat === 'Все') {
++       // ← ЗДЕСЬ ИЗМЕНЕНО: заново подгружаем и рендерим весь список
++       fetchItems().then(renderItems);
++     } else {
++       const arr = Array.isArray(cachedItems) ? cachedItems : [];
++       const filtered = arr.filter(i => (i['Категория'] || '') === cat);
++       renderItems(filtered);
++     }
         });
       });
     });
