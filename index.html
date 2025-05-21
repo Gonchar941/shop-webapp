@@ -443,7 +443,6 @@ function applyTheme() {
     btn.innerText = theme === 'dark' ? '☀️ Светлая тема' : '🌙 Темная тема';
   }
 }
-window.addEventListener('DOMContentLoaded', applyTheme);
 
 window.addEventListener('DOMContentLoaded', () => {
   const themeToggleBtn = document.getElementById('theme-toggle');
@@ -712,7 +711,7 @@ window.addEventListener('DOMContentLoaded', () => {
       alert(`Товар "${name}" добавлен в корзину!`);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
+    
       showBanner();
       loadShop();
 
