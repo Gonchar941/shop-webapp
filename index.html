@@ -427,21 +427,6 @@ function loadShop() {
       document.getElementById('items').classList.remove('fade-out');
     });
 }
-  // Показываем меню категорий
-  document.getElementById('category-menu').style.display = 'flex';
-
-  // Обновляем заголовок
-  document.getElementById('page-title').innerText = '🛍 Магазин TERRIKON';
-
-  // Загружаем и рендерим товары
-  fetchItems()
-    .then(renderItems)
-    .catch(() => {
-      document.getElementById('items').innerHTML =
-        '<p style="padding:24px; text-align:center;">Не удалось загрузить товары.</p>';
-      document.getElementById('items').classList.remove('fade-out');
-    });
-}
 
 // Показ «Корзины»
 function showCart() {
@@ -547,79 +532,65 @@ function showContacts() {
       });
     }
 
-    // Подсветка вкладки
+        // Подсветка вкладки
     function setActiveTab(id) {
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-    <script>
-  // … все твои функции выше …
 
-  // Инициализация событий после загрузки DOM
-  document.addEventListener('DOMContentLoaded', () => {
-    // Показываем баннер
-    showBanner();
-    // Загружаем магазин по умолчанию
-    loadShop();
+    // Инициализация событий после загрузки DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      // Показываем баннер
+      showBanner();
+      // Загружаем магазин по умолчанию
+      loadShop();
 
-    // ——— Обработчик клика по основным категориям ———
-    document.querySelectorAll('.cat-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        // 1) Сбрасываем актив и подсвечиваем текущую
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        // 2) Выбранная категория
-        const cat = btn.dataset.cat;
-
-        // 3) Рендерим подкатегории (скроет, если 'Все', покажет, если есть данные)
-        renderSubcategories(cat);
-
-        // 4) Фильтруем и показываем товары
-        switchContent(() => {
-          if (cat === 'Все') {
-            renderItems(cachedItems);
-          } else {
-            const filtered = cachedItems.filter(item =>
-              (item['Категория'] || '') === cat
-            );
-            renderItems(filtered);
-          }
+      // Обработчик для кнопок категорий
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const cat = btn.dataset.cat;
+          renderSubcategories(cat);
+          switchContent(() => {
+            if (cat === 'Все') renderItems(cachedItems);
+            else {
+              const filtered = cachedItems.filter(item => item['Категория'] === cat);
+              renderItems(filtered);
+            }
+          });
         });
       });
-    });
 
-    // Навигация с анимацией и подсветкой табов
-    document.getElementById('tab-shop').addEventListener('click', () => {
-      setActiveTab('tab-shop');
-      switchContent(loadShop);
-    });
-    document.getElementById('tab-cart').addEventListener('click', () => {
-      setActiveTab('tab-cart');
-      switchContent(showCart);
-    });
-    document.getElementById('tab-fav').addEventListener('click', () => {
-      setActiveTab('tab-fav');
-      switchContent(showFavorites);
-    });
-    document.getElementById('tab-contact').addEventListener('click', () => {
-      setActiveTab('tab-contact');
-      switchContent(showContacts);
-    });
+      // Навигация табов
+      document.getElementById('tab-shop').addEventListener('click', () => {
+        setActiveTab('tab-shop'); switchContent(loadShop);
+      });
+      document.getElementById('tab-cart').addEventListener('click', () => {
+        setActiveTab('tab-cart'); switchContent(showCart);
+      });
+      document.getElementById('tab-fav').addEventListener('click', () => {
+        setActiveTab('tab-fav'); switchContent(showFavorites);
+      });
+      document.getElementById('tab-contact').addEventListener('click', () => {
+        setActiveTab('tab-contact'); switchContent(showContacts);
+      });
 
-    // Закрытие модалки по крестику и клику вне контента
-    document.querySelector('.modal-close').addEventListener('click', hideModal);
-    document.getElementById('product-modal').addEventListener('click', e => {
-      if (e.target.id === 'product-modal') hideModal();
-    });
+      // Закрытие модалки
+      document.querySelector('.modal-close').addEventListener('click', hideModal);
+      document.getElementById('product-modal').addEventListener('click', e => {
+        if (e.target.id === 'product-modal') hideModal();
+      });
 
-    // Добавить в корзину из модалки
-    document.getElementById('modal-add-btn').addEventListener('click', () => {
-      if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
-      hideModal();
-    });
+      // Добавить в корзину из модалки
+      document.getElementById('modal-add-btn').addEventListener('click', () => {
+        if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
+        hideModal();
+      });
 
-    // Включаем свайп для закрытия модалки
-    enableModalSwipe();
-  });
-</script>
+      // Свайп для модалки
+      enableModalSwipe();
+    });
+  </script>
+</body>
+</html>
