@@ -173,17 +173,16 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 500px; /* Подходит для 5 фото */
-  overflow-y: auto;
-  padding-right: 6px;
-  scrollbar-width: thin;
+  max-height: none;           /* убираем ограничение */
+  overflow-y: visible;        /* отключаем скролл */
+  padding-right: 0;
 }
 
 .modal-thumbs-vertical img {
-  width: 72px;
-  height: 96px;
+  width: 68px;
+  height: 90px;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: border 0.3s;
