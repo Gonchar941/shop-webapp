@@ -172,6 +172,25 @@
 }
 .gallery-prev { left: 0; }
 .gallery-next { right: 0; }
+.modal-thumbs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.modal-thumbs img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s;
+}
+.modal-thumbs img.active {
+  border-color: #0d6efd;
+}
 
 
     /* Главное меню категорий */
@@ -408,30 +427,6 @@ body.dark .nav-item.active {
     opacity: 0;
   }
 }
-#gallery-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.gallery-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.2);
-  transition: background 0.3s;
-  cursor: pointer;
-}
-.gallery-dot.active {
-  background: #0d6efd;
-}
-body.dark .gallery-dot {
-  background: rgba(255,255,255,0.2);
-}
-body.dark .gallery-dot.active {
-  background: #0d99ff;
-}
 
 
   </style>
@@ -492,8 +487,12 @@ body.dark .gallery-dot.active {
     <div class="modal-close">&times;</div>
 
     <div class="modal-gallery">
+      <button class="gallery-prev">&lt;</button>
       <img id="modal-img" src="" alt="Фото товара">
-<div id="gallery-dots" style="margin-top: 12px;"></div>
+      <button class="gallery-next">&gt;</button>
+    </div>
+    <!-- Миниатюры изображений -->
+    <div class="modal-thumbs" id="modal-thumbs"></div>
 
     <h2 id="modal-title"></h2>
     <p class="price" id="modal-price"></p>
@@ -715,20 +714,21 @@ if (!localStorage.getItem('theme')) {
   const img = document.getElementById('modal-img');
   if (currentGalleryImages.length === 0) return;
   img.src = currentGalleryImages[currentGalleryIndex];
-  updateGalleryDots();
+  renderThumbnails(); // ← вот эта строка важна
 }
-
-function updateGalleryDots() {
-  const dotsContainer = document.getElementById('gallery-dots');
-  dotsContainer.innerHTML = '';
-  currentGalleryImages.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.className = 'gallery-dot' + (i === currentGalleryIndex ? ' active' : '');
-    dot.addEventListener('click', () => {
-      currentGalleryIndex = i;
+    function renderThumbnails() {
+  const thumbs = document.getElementById('modal-thumbs');
+  thumbs.innerHTML = '';
+  currentGalleryImages.forEach((src, idx) => {
+    const img = document.createElement('img');
+    img.src = src;
+    if (idx === currentGalleryIndex) img.classList.add('active');
+    img.addEventListener('click', () => {
+      currentGalleryIndex = idx;
       updateGalleryImage();
+      renderThumbnails();
     });
-    dotsContainer.appendChild(dot);
+    thumbs.appendChild(img);
   });
 }
 
@@ -740,6 +740,9 @@ function updateGalleryDots() {
   currentGalleryImages = [main, ...extra.split(',').map(s => s.trim()).filter(Boolean)];
   currentGalleryIndex = 0;
   updateGalleryImage();
+  updateGalleryImage();
+  renderThumbnails();
+
 
   document.getElementById('modal-title').innerText = item.Название;
   document.getElementById('modal-price').innerText = item.Цена + ' руб.';
@@ -863,7 +866,17 @@ function updateGalleryDots() {
 
        enableModalSwipe();
       
-     
+     document.querySelector('.gallery-prev').addEventListener('click', () => {
+  if (currentGalleryImages.length === 0) return;
+  currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+  updateGalleryImage();
+});
+
+document.querySelector('.gallery-next').addEventListener('click', () => {
+  if (currentGalleryImages.length === 0) return;
+  currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+  updateGalleryImage();
+});
 
   // Скрываем магазин до выбора темы
   document.getElementById('category-menu').style.display = 'none';
