@@ -172,22 +172,23 @@
 .modal-thumbs-vertical {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  overflow-y: visible;
+  gap: 12px;
   max-height: none;
+  overflow-y: visible;
   padding-right: 0;
 }
 
 
 .modal-thumbs-vertical img {
-  width: 68px;
-  height: 90px;
+  width: 80px;
+  height: 100px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: border 0.3s;
 }
+
 
 
 .modal-thumbs-vertical img.active {
@@ -766,7 +767,7 @@ if (!localStorage.getItem('theme')) {
     function renderThumbnails() {
   const thumbs = document.getElementById('modal-thumbs');
   thumbs.innerHTML = '';
-  currentGalleryImages.forEach((src, idx) => {
+  currentGalleryImages.slice(0, 4).forEach((src, idx) => {
     const img = document.createElement('img');
     img.src = src;
     if (idx === currentGalleryIndex) img.classList.add('active');
