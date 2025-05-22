@@ -408,6 +408,44 @@ body.dark .nav-item.active {
     opacity: 0;
   }
 }
+/* Эффект размытия фона */
+body.modal-open {
+  filter: blur(5px);
+  transition: filter 0.4s ease;
+}
+
+/* Фон НЕ должен быть размыт, когда модалка закрыта */
+body:not(.modal-open) {
+  filter: none;
+}
+
+/* Анимация модального окна */
+.modal-content {
+  transform: scale(0.9);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
+  opacity: 1;
+}
+#modal-blur-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 15;
+  display: none;
+  transition: opacity 0.3s ease;
+}
+
+#modal-blur-bg.show {
+  display: block;
+  opacity: 1;
+}
 
 
   </style>
@@ -419,7 +457,7 @@ body.dark .nav-item.active {
   <h2 style="font-size: 28px; margin-bottom: 30px;">Выберите тему</h2>
   <img src="theme-selection.png" alt="Выбор темы" style="width: 100%; max-width: 800px; border-radius: 20px;">
 
-  <div style="display: flex; justify-content: center; gap: 20px; margin-top: -30px;">
+  <div style="display: flex; justify-content: center; gap: 20px; margin-top: -40px;">
     <button class="select-theme" data-theme="dark" style="padding: 12px 24px; font-size: 16px; border-radius: 12px; border: none; background: #222; color: white;">Темная тема</button>
     <button class="select-theme" data-theme="light" style="padding: 12px 24px; font-size: 16px; border-radius: 12px; border: none; background: #f1f1f1; color: #111;">Светлая тема</button>
   </div>
@@ -463,6 +501,7 @@ body.dark .nav-item.active {
   </div>
 
   <!-- Модальное окно -->
+<div id="modal-blur-bg"></div>
 <div id="product-modal" class="modal">
   <div class="modal-content">
     <div class="modal-close">&times;</div>
@@ -710,12 +749,14 @@ if (!localStorage.getItem('theme')) {
   document.getElementById('modal-category').innerText = item['Категория'] || '-';
   document.getElementById('modal-sizes').innerText = item['Размеры'] || '-';
   document.getElementById('modal-desc').innerText = item['Описание (опц.)'] || '-';
+  document.body.classList.add('modal-open');  // ← добавляем blur
   document.getElementById('product-modal').classList.add('show');
 }
 
     function hideModal() {
-      document.getElementById('product-modal').classList.remove('show');
-    }
+  document.getElementById('product-modal').classList.remove('show');
+  document.body.classList.remove('modal-open');  // ← убираем blur
+}
 
     function enableModalSwipe() {
   let startX = 0;
