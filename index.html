@@ -484,6 +484,12 @@ function applyTheme() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+// Показываем баннер сразу, если ещё не выбрана тема
+if (!localStorage.getItem('theme')) {
+  document.getElementById('expand-banner').style.display = '';
+  showBanner();
+}
+
   const themeToggleBtn = document.getElementById('theme-toggle');
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
