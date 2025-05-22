@@ -173,8 +173,10 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 340px;
+  max-height: 500px; /* Подходит для 5 фото */
   overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
 }
 
 .modal-thumbs-vertical img {
@@ -440,7 +442,6 @@ body.dark .nav-item.active {
 /* 👇 Вот сюда вставь */
 @media (max-width: 480px) {
   .modal-gallery-vertical {
-    display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
@@ -450,8 +451,9 @@ body.dark .nav-item.active {
 
   .modal-thumbs-vertical {
     flex-direction: column;
-    max-height: 260px;
+    max-height: 300px;
     gap: 8px;
+    overflow-y: auto;
   }
 
   .modal-thumbs-vertical img {
@@ -460,7 +462,7 @@ body.dark .nav-item.active {
   }
 
   .modal-main-img img {
-    max-width: calc(100vw - 130px); /* оставляем место под доп фото */
+    max-width: calc(100vw - 130px);
     height: 380px;
   }
 }
