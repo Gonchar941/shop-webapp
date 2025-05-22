@@ -17,6 +17,17 @@
       color: #333;
       padding-bottom: 80px;
     }
+.fly-img {
+  position: fixed;
+  z-index: 9999;
+  transition: transform 0.7s ease-in-out, opacity 0.7s;
+  pointer-events: none;
+  border-radius: 10px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  opacity: 1;
+}
 
     /* Баннер «разверните приложение» */
     #expand-banner {
@@ -310,31 +321,25 @@
       border-radius: 8px;
     }
     .modal-close {
-      position: absolute;
-      top: 12px; right: 12px;
-      font-size: 28px;
-      background: #fff;
-      width: 36px; height: 36px;
-      line-height: 36px;
-      text-align: center;
-      border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      cursor: pointer;
-      color: #333;
-      z-index: 25;
-    }
-    .modal-content h2 {
-      margin: 16px 0 8px;
-      font-size: 24px;
-    }
-    .modal-content p {
-      margin: 8px 0;
-      font-size: 16px;
-      color: #444;
-    }
-    .modal-content p strong {
-      color: #222;
-    }
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05); /* светло-прозрачный фон */
+  color: inherit;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6px); /* модный эффект */
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
 /* Темная тема — читаемость текста и элементов */
 body.dark {
   background: #1e1e1e;
@@ -367,6 +372,11 @@ body.dark .cart-btn {
 
 body.dark .cart-btn:hover {
   background: #084298;
+}
+body.dark .modal-close {
+  background: rgba(255, 255, 255, 0.05);
+  color: #eee;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Дополнительно: текст внутри карточек и модалки */
@@ -856,10 +866,38 @@ if (!localStorage.getItem('theme')) {
     }
 
     function addToCart(name, price, img) {
-      cart.push({ name, price, img });
-      localStorage.setItem('cart', JSON.stringify(cart));
-      alert(`Товар "${name}" добавлен в корзину!`);
-    }
+  cart.push({ name, price, img });
+  localStorage.setItem('cart', JSON.stringify(cart));
+
+  // 👇 Находим кнопку и картинку товара
+  const modal = document.querySelector('.modal-content');
+  const mainImg = modal.querySelector('#modal-img');
+  const cartIcon = document.querySelector('#tab-cart');
+
+  if (mainImg && cartIcon) {
+    const clone = mainImg.cloneNode(true);
+    const rect = mainImg.getBoundingClientRect();
+    const cartRect = cartIcon.getBoundingClientRect();
+
+    clone.classList.add('fly-img');
+    clone.style.left = rect.left + 'px';
+    clone.style.top = rect.top + 'px';
+    document.body.appendChild(clone);
+
+    // Триггер анимации
+    setTimeout(() => {
+      clone.style.transform = `translate(${cartRect.left - rect.left}px, ${cartRect.top - rect.top}px) scale(0.3)`;
+      clone.style.opacity = '0';
+    }, 10);
+
+    // Удаление клона после анимации
+    setTimeout(() => {
+      clone.remove();
+    }, 700);
+  }
+
+  alert(`Товар "${name}" добавлен в корзину!`);
+}
 
     
       showBanner();
