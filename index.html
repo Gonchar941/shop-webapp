@@ -151,83 +151,53 @@
     }
         .cart-btn:hover { background: #0b5ed7; }
 
-    .modal-gallery {
-  position: relative;
+    ..modal-gallery-vertical {
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.modal-gallery button {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.9);
-  border: none;
-  font-size: 24px;
-  padding: 8px 12px;
-  cursor: pointer;
-  z-index: 5;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-.gallery-prev { left: 0; }
-.gallery-next { right: 0; }
-.modal-thumbs {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 14px;
-  flex-wrap: wrap;
-}
-.modal-thumbs img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: border 0.3s;
-}
-.modal-thumbs img.active {
-  border-color: #0d6efd;
-}
-.modal-gallery-vertical {
-  display: flex;
-  gap: 16px;
+  gap: 20px;
   justify-content: center;
   align-items: flex-start;
   margin-top: 20px;
 }
 
 .modal-main-img img {
-  width: 320px;
-  height: 320px;
-  object-fit: cover;
+  width: 100%;
+  max-width: 350px;
+  height: auto;
   border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .modal-thumbs-vertical {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: 340px;
+  gap: 12px;
+  max-height: 360px;
   overflow-y: auto;
   padding-right: 6px;
 }
 
 .modal-thumbs-vertical img {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: border 0.3s;
 }
+
 .modal-thumbs-vertical img.active {
   border-color: #0d6efd;
 }
 
+/* Старая горизонтальная галерея и стрелки — убираем визуально */
+.modal-gallery,
+.gallery-prev,
+.gallery-next,
+.modal-thumbs {
+  display: none !important;
+}
 
     /* Главное меню категорий */
     #category-menu {
@@ -461,6 +431,21 @@ body.dark .nav-item.active {
   100% {
     transform: translateY(-100vh);
     opacity: 0;
+  }
+}
+
+/* 👇 Вот сюда вставь */
+@media (max-width: 480px) {
+  .modal-gallery-vertical {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .modal-thumbs-vertical {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-height: none;
   }
 }
 
