@@ -408,6 +408,30 @@ body.dark .nav-item.active {
     opacity: 0;
   }
 }
+#gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.gallery-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  transition: background 0.3s;
+  cursor: pointer;
+}
+.gallery-dot.active {
+  background: #0d6efd;
+}
+body.dark .gallery-dot {
+  background: rgba(255,255,255,0.2);
+}
+body.dark .gallery-dot.active {
+  background: #0d99ff;
+}
 
 
   </style>
@@ -468,10 +492,8 @@ body.dark .nav-item.active {
     <div class="modal-close">&times;</div>
 
     <div class="modal-gallery">
-      <button class="gallery-prev">&lt;</button>
       <img id="modal-img" src="" alt="Фото товара">
-      <button class="gallery-next">&gt;</button>
-    </div>
+<div id="gallery-dots" style="margin-top: 12px;"></div>
 
     <h2 id="modal-title"></h2>
     <p class="price" id="modal-price"></p>
@@ -693,6 +715,21 @@ if (!localStorage.getItem('theme')) {
   const img = document.getElementById('modal-img');
   if (currentGalleryImages.length === 0) return;
   img.src = currentGalleryImages[currentGalleryIndex];
+  updateGalleryDots();
+}
+
+function updateGalleryDots() {
+  const dotsContainer = document.getElementById('gallery-dots');
+  dotsContainer.innerHTML = '';
+  currentGalleryImages.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'gallery-dot' + (i === currentGalleryIndex ? ' active' : '');
+    dot.addEventListener('click', () => {
+      currentGalleryIndex = i;
+      updateGalleryImage();
+    });
+    dotsContainer.appendChild(dot);
+  });
 }
 
 
@@ -826,17 +863,7 @@ if (!localStorage.getItem('theme')) {
 
        enableModalSwipe();
       
-     document.querySelector('.gallery-prev').addEventListener('click', () => {
-  if (currentGalleryImages.length === 0) return;
-  currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-  updateGalleryImage();
-});
-
-document.querySelector('.gallery-next').addEventListener('click', () => {
-  if (currentGalleryImages.length === 0) return;
-  currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
-  updateGalleryImage();
-});
+     
 
   // Скрываем магазин до выбора темы
   document.getElementById('category-menu').style.display = 'none';
