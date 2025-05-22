@@ -408,44 +408,6 @@ body.dark .nav-item.active {
     opacity: 0;
   }
 }
-/* Эффект размытия фона */
-body.modal-open {
-  filter: blur(5px);
-  transition: filter 0.4s ease;
-}
-
-/* Фон НЕ должен быть размыт, когда модалка закрыта */
-body:not(.modal-open) {
-  filter: none;
-}
-
-/* Анимация модального окна */
-.modal-content {
-  transform: scale(0.9);
-  opacity: 0;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-.modal.show .modal-content {
-  transform: scale(1);
-  opacity: 1;
-}
-#modal-blur-bg {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(8px);
-  background: rgba(0, 0, 0, 0.15);
-  z-index: 15;
-  display: none;
-  transition: opacity 0.3s ease;
-}
-
-#modal-blur-bg.show {
-  display: block;
-  opacity: 1;
-}
 
 
   </style>
@@ -501,7 +463,6 @@ body:not(.modal-open) {
   </div>
 
   <!-- Модальное окно -->
-<div id="modal-blur-bg"></div>
 <div id="product-modal" class="modal">
   <div class="modal-content">
     <div class="modal-close">&times;</div>
@@ -749,14 +710,12 @@ if (!localStorage.getItem('theme')) {
   document.getElementById('modal-category').innerText = item['Категория'] || '-';
   document.getElementById('modal-sizes').innerText = item['Размеры'] || '-';
   document.getElementById('modal-desc').innerText = item['Описание (опц.)'] || '-';
-  document.body.classList.add('modal-open');  // ← добавляем blur
   document.getElementById('product-modal').classList.add('show');
 }
 
     function hideModal() {
-  document.getElementById('product-modal').classList.remove('show');
-  document.body.classList.remove('modal-open');  // ← убираем blur
-}
+      document.getElementById('product-modal').classList.remove('show');
+    }
 
     function enableModalSwipe() {
   let startX = 0;
