@@ -432,7 +432,8 @@ body.dark .nav-item.active {
 
 
   <!-- Баннер -->
-  <div id="expand-banner">Разверните приложение на весь экран</div>
+  <div id="expand-banner" style="display:none;">Разверните приложение на весь экран</div>
+
 
   <!-- Заголовок -->
 <div id="page-title">🛍 Магазин TERRIKОN</div>
@@ -499,25 +500,11 @@ function selectTheme(mode) {
   loadShop(); // Показать магазин после выбора темы
 }
 
-// переключение темы — ставим как можно раньше
-function applyTheme() {
-  const theme = localStorage.getItem('theme') || 'light';
-  document.body.classList.toggle('dark', theme === 'dark');
-  const btn = document.getElementById('theme-toggle');
-  if (btn) {
-    btn.innerText = theme === 'dark' ? '☀️ Светлая тема' : '🌙 Темная тема';
-  }
-}
 
 window.addEventListener('DOMContentLoaded', () => {
-  const themeToggleBtn = document.getElementById('theme-toggle');
-  if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-      const isDark = document.body.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      themeToggleBtn.innerText = isDark ? '☀️ Светлая тема' : '🌙 Темная тема';
-    });
-  }
+
+
+  
 
   // твой основной код тут продолжается...
 
@@ -548,38 +535,47 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderItems(data) {
-      if (!Array.isArray(data)) {
-        console.error('renderItems: ожидаем массив, получили', data);
-        return;
-      }
-      const c = document.getElementById('items');
-      c.innerHTML = '';
-      data.forEach(item => {
-        if ((item['В наличии'] || '').toLowerCase().includes('да')) {
-          const div = document.createElement('div');
-          div.className = 'item';
-          div.innerHTML = `
-            <img src="${item['Фото (URL)']}" alt="${item.Название}">
-            <div class="item-content">
-              <div>
-                <div class="title">${item.Название}</div>
-                <div class="price">${item.Цена} руб.</div>
-                <div class="status"></div>
-              </div>
-              <button class="cart-btn">Добавить в корзину</button>
-            </div>`;
-          // Добавление в корзину по кнопке
-          div.querySelector('.cart-btn').addEventListener('click', e => {
-            e.stopPropagation();
-            addToCart(item.Название, item.Цена, item['Фото (URL)']);
-          });
-          // Открытие деталей по клику на карточку
-          div.addEventListener('click', () => showDetails(item));
-          c.appendChild(div);
-        }
+  if (!Array.isArray(data)) {
+    console.error('renderItems: ожидаем массив, получили', data);
+    return;
+  }
+  const c = document.getElementById('items');
+  c.innerHTML = '';
+  
+  let found = false;
+
+  data.forEach(item => {
+    if ((item['В наличии'] || '').toString().toLowerCase().includes('да')) {
+      found = true;
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <img src="${item['Фото (URL)']}" alt="${item.Название}">
+        <div class="item-content">
+          <div>
+            <div class="title">${item.Название}</div>
+            <div class="price">${item.Цена} руб.</div>
+            <div class="status">В наличии</div>
+          </div>
+          <button class="cart-btn">Добавить в корзину</button>
+        </div>`;
+      div.querySelector('.cart-btn').addEventListener('click', e => {
+        e.stopPropagation();
+        addToCart(item.Название, item.Цена, item['Фото (URL)']);
       });
-      c.classList.remove('fade-out');
+      div.addEventListener('click', () => showDetails(item));
+      c.appendChild(div);
     }
+  });
+
+  if (!found) {
+    c.innerHTML = '<p style="padding:24px; text-align:center;">Нет доступных товаров для отображения.</p>';
+  }
+
+  c.classList.remove('fade-out');
+}
+
+        
 
     function switchContent(renderFn) {
       const c = document.getElementById('items');
@@ -777,8 +773,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     
-      showBanner();
-      loadShop();
+     
 
       document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -819,55 +814,71 @@ window.addEventListener('DOMContentLoaded', () => {
         if (e.target.id === 'product-modal') hideModal();
       });
 
-      document.getElementById('modal-add-btn').addEventListener('click', () => {
+            document.getElementById('modal-add-btn').addEventListener('click', () => {
         if (currentItem) addToCart(currentItem.Название, currentItem.Цена, currentItem['Фото (URL)']);
         hideModal();
       });
 
-       enableModalSwipe();
-      
-     document.querySelector('.gallery-prev').addEventListener('click', () => {
-  if (currentGalleryImages.length === 0) return;
-  currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-  updateGalleryImage();
-});
+      enableModalSwipe();
 
-document.querySelector('.gallery-next').addEventListener('click', () => {
-  if (currentGalleryImages.length === 0) return;
-  currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
-  updateGalleryImage();
-});
+      document.querySelector('.gallery-prev').addEventListener('click', () => {
+        if (currentGalleryImages.length === 0) return;
+        currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+        updateGalleryImage();
+      });
 
-  // Скрываем магазин до выбора темы
-  document.getElementById('category-menu').style.display = 'none';
-  document.querySelector('.navbar').style.display = 'none';
-  document.getElementById('items').style.display = 'none';
-  document.getElementById('page-title').style.display = 'none';
-  document.getElementById('expand-banner').style.display = 'none';
-  document.getElementById('subcategory-menu').style.display = 'none';
+      document.querySelector('.gallery-next').addEventListener('click', () => {
+        if (currentGalleryImages.length === 0) return;
+        currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+        updateGalleryImage();
+      });
 
-  // Ждём нажатие на кнопку выбора темы
-  document.querySelectorAll('.select-theme').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const selectedTheme = btn.dataset.theme;
-      localStorage.setItem('theme', selectedTheme);
-      document.body.classList.toggle('dark', selectedTheme === 'dark');
+      // Скрываем магазин до выбора темы
+      document.getElementById('category-menu').style.display = 'none';
+      document.querySelector('.navbar').style.display = 'none';
+      document.getElementById('items').style.display = 'none';
+      document.getElementById('page-title').style.display = 'none';
+      document.getElementById('expand-banner').style.display = 'none';
+      document.getElementById('subcategory-menu').style.display = 'none';
 
-      const themeSelection = document.getElementById('theme-selection');
-      if (themeSelection) themeSelection.remove(); // ← безопасно
+      // Ждём нажатие на кнопку выбора темы
+      document.querySelectorAll('.select-theme').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const selectedTheme = btn.dataset.theme;
+    console.log('Тема выбрана:', selectedTheme);
 
-      // Показываем магазин
-      document.getElementById('category-menu').style.display = 'flex';
-      document.querySelector('.navbar').style.display = 'flex';
-      document.getElementById('items').style.display = '';
-      document.getElementById('page-title').style.display = '';
-      document.getElementById('expand-banner').style.display = '';
-    });
+    localStorage.setItem('theme', selectedTheme);
+    document.body.classList.toggle('dark', selectedTheme === 'dark');
+
+    const themeSelection = document.getElementById('theme-selection');
+    if (themeSelection) themeSelection.style.display = 'none';
+
+    const categoryMenu = document.getElementById('category-menu');
+    const navbar = document.querySelector('.navbar');
+    const items = document.getElementById('items');
+    const pageTitle = document.getElementById('page-title');
+    const subcategoryMenu = document.getElementById('subcategory-menu');
+    const banner = document.getElementById('expand-banner');
+
+    if (categoryMenu) categoryMenu.style.display = 'flex';
+    if (navbar) navbar.style.display = 'flex';
+    if (items) items.style.display = 'flex';
+    if (pageTitle) pageTitle.style.display = 'block';
+    if (subcategoryMenu) subcategoryMenu.style.display = 'none';
+    if (banner) {
+      banner.style.display = 'block';
+      setTimeout(showBanner, 100);
+    }
+
+    console.log('Загружаем магазин...');
+    loadShop();
   });
 });
+}); // ← это конец DOMContentLoaded
 </script>
 </body>
 </html>
+
 
 
 
