@@ -153,48 +153,44 @@
 
     .modal-gallery-vertical {
   display: flex;
-  gap: 24px;
+  flex-direction: row;
+  gap: 16px;
   justify-content: center;
   align-items: flex-start;
   margin-top: 20px;
-  flex-direction: row; /* Главное фото справа, миниатюры слева */
 }
 
 .modal-main-img img {
   width: 100%;
-  max-width: 420px;
+  max-width: 320px;
   height: auto;
-  border-radius: 14px;
   object-fit: cover;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .modal-thumbs-vertical {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-height: 440px;
+  gap: 10px;
+  max-height: 340px;
   overflow-y: auto;
-  padding-right: 6px;
 }
 
 .modal-thumbs-vertical img {
-  width: 72px;
-  height: 72px;
+  width: 60px;
+  height: 60px;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: border 0.3s, transform 0.2s;
-}
-
-.modal-thumbs-vertical img:hover {
-  transform: scale(1.05);
+  transition: border 0.3s;
 }
 
 .modal-thumbs-vertical img.active {
   border-color: #0d6efd;
 }
+
 
 /* Старая горизонтальная галерея и стрелки — убираем визуально */
 .modal-gallery,
@@ -442,15 +438,28 @@ body.dark .nav-item.active {
 /* 👇 Вот сюда вставь */
 @media (max-width: 480px) {
   .modal-gallery-vertical {
-    flex-direction: column;
-    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 16px;
   }
 
   .modal-thumbs-vertical {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-height: none;
+    flex-direction: column;
+    max-height: 260px;
+    gap: 8px;
+  }
+
+  .modal-thumbs-vertical img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .modal-main-img img {
+    max-width: calc(100vw - 130px); /* оставляем место под доп фото */
+    height: auto;
   }
 }
 
