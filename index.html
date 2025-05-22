@@ -151,40 +151,45 @@
     }
         .cart-btn:hover { background: #0b5ed7; }
 
-    ..modal-gallery-vertical {
+    .modal-gallery-vertical {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   justify-content: center;
   align-items: flex-start;
   margin-top: 20px;
+  flex-direction: row; /* Главное фото справа, миниатюры слева */
 }
 
 .modal-main-img img {
   width: 100%;
-  max-width: 350px;
+  max-width: 420px;
   height: auto;
-  border-radius: 12px;
+  border-radius: 14px;
   object-fit: cover;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
 .modal-thumbs-vertical {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 360px;
+  max-height: 440px;
   overflow-y: auto;
   padding-right: 6px;
 }
 
 .modal-thumbs-vertical img {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: border 0.3s;
+  transition: border 0.3s, transform 0.2s;
+}
+
+.modal-thumbs-vertical img:hover {
+  transform: scale(1.05);
 }
 
 .modal-thumbs-vertical img.active {
