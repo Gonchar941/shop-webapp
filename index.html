@@ -162,8 +162,8 @@
 
 .modal-main-img img {
   width: 100%;
-  max-width: 320px;
-  height: auto;
+  max-width: 420px;
+  height: 520px;
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -179,13 +179,14 @@
 
 .modal-thumbs-vertical img {
   width: 60px;
-  height: 60px;
+  height: 80px;
   object-fit: cover;
   border-radius: 8px;
   cursor: pointer;
   border: 2px solid transparent;
   transition: border 0.3s;
 }
+
 
 .modal-thumbs-vertical img.active {
   border-color: #0d6efd;
@@ -289,14 +290,15 @@
     }
     .modal.show { display: flex; }
     .modal-content {
-      background: #fff;
-      border-radius: 12px;
-      width: 90%; max-width: 600px;
-      padding: 20px;
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
+  background: #fff;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 700px;
+  padding: 24px;
+  position: relative;
+  max-height: 95vh;
+  overflow-y: auto;
+}
     .modal-content img {
       width: 100%;
       aspect-ratio: 1/1;
@@ -453,13 +455,13 @@ body.dark .nav-item.active {
   }
 
   .modal-thumbs-vertical img {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 66px;
   }
 
   .modal-main-img img {
     max-width: calc(100vw - 130px); /* оставляем место под доп фото */
-    height: auto;
+    height: 380px;
   }
 }
 
