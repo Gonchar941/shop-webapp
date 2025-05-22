@@ -191,6 +191,42 @@
 .modal-thumbs img.active {
   border-color: #0d6efd;
 }
+.modal-gallery-vertical {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.modal-main-img img {
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.modal-thumbs-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.modal-thumbs-vertical img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.3s;
+}
+.modal-thumbs-vertical img.active {
+  border-color: #0d6efd;
+}
 
 
     /* Главное меню категорий */
@@ -486,11 +522,12 @@ body.dark .nav-item.active {
   <div class="modal-content">
     <div class="modal-close">&times;</div>
 
-    <div class="modal-gallery">
-      <button class="gallery-prev">&lt;</button>
-      <img id="modal-img" src="" alt="Фото товара">
-      <button class="gallery-next">&gt;</button>
-    </div>
+    <div class="modal-gallery-vertical">
+  <div class="modal-thumbs-vertical" id="modal-thumbs"></div>
+  <div class="modal-main-img">
+    <img id="modal-img" src="" alt="Фото товара">
+  </div>
+</div>
     <!-- Миниатюры изображений -->
     <div class="modal-thumbs" id="modal-thumbs"></div>
 
@@ -726,12 +763,10 @@ if (!localStorage.getItem('theme')) {
     img.addEventListener('click', () => {
       currentGalleryIndex = idx;
       updateGalleryImage();
-      renderThumbnails();
     });
     thumbs.appendChild(img);
   });
 }
-
 
     function showDetails(item) {
   currentItem = item;
@@ -739,7 +774,6 @@ if (!localStorage.getItem('theme')) {
   const extra = item['Доп. фото'] || '';
   currentGalleryImages = [main, ...extra.split(',').map(s => s.trim()).filter(Boolean)];
   currentGalleryIndex = 0;
-  updateGalleryImage();
   updateGalleryImage();
   renderThumbnails();
 
@@ -866,17 +900,6 @@ if (!localStorage.getItem('theme')) {
 
        enableModalSwipe();
       
-     document.querySelector('.gallery-prev').addEventListener('click', () => {
-  if (currentGalleryImages.length === 0) return;
-  currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-  updateGalleryImage();
-});
-
-document.querySelector('.gallery-next').addEventListener('click', () => {
-  if (currentGalleryImages.length === 0) return;
-  currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
-  updateGalleryImage();
-});
 
   // Скрываем магазин до выбора темы
   document.getElementById('category-menu').style.display = 'none';
