@@ -505,7 +505,7 @@ body.dark .nav-item.active {
   <div id="expand-banner">Разверните приложение на весь экран</div>
 
   <!-- Заголовок -->
-<div id="page-title">🛍 Магазин TERRIKОN</div>
+<div id="page-title">🛍 Магазин </div>
 
 
   <!-- Главное меню категорий -->
@@ -696,7 +696,7 @@ if (!localStorage.getItem('theme')) {
     function loadShop() {
       document.getElementById('category-menu').style.display = 'flex';
       document.getElementById('subcategory-menu').style.display = 'none';
-      document.getElementById('page-title').innerText = '🛍 Магазин TERRIKОN';
+      document.getElementById('page-title').innerText = '🛍 Магазин ';
       fetchItems()
         .then(renderItems)
         .catch(() => {
